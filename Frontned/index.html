@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ticket Management System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <button id="logoutBtn" class="btn secondary hidden global-logout">Logout</button>
+
+  <!-- Login Page -->
+  <main id="loginPage">
+    <section class="card login-card">
+      <h2> <img id="appLogo" src="bgr.png" style="width: 160px; height: 65px; border-radius: 12px;"></h2>
+      <div class="form-group">
+        <label for="loginUsername">Username</label>
+        <input id="loginUsername" type="text" />
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" />
+      </div>
+      <div class="form-group">
+        <label for="loginRole">Role</label>
+        <select id="loginRole">
+            <option value="">Select Role</option>
+          <option value="admin">Admin</option>
+          <option value="frontoffice">Front Office</option>
+          <option value="finance">Finance</option>
+          <option value="manager">Manager</option>
+          <option value="employee">Employee</option>
+        </select>
+      </div>
+      <button id="loginBtn" class="btn primary">Login</button>
+      <button id="forgotLink" class="btn small secondary" style="margin-left:8px;">Forgot Password?</button>
+      <p id="loginError" class="error-msg"></p>
+
+      <!-- <div class="info-box">
+        <h3>Test Accounts</h3>
+        <ul>
+          <li>Admin: admin / admin123</li>
+          <li>Front Office: frontoffice / office123</li>
+          <li>Sales Manager: mgr_sales / manager123</li>
+          <li>Installation Manager: mgr_install / manager123</li>
+          <li>Services Manager: mgr_services / manager123</li>
+          <li>Complaints Manager: mgr_complaints / manager123</li>
+        </ul>
+      </div> -->
+    </section>
+
+    <!-- Forgot Password Page -->
+    <section id="forgotPasswordPage" class="dashboard hidden">
+      <h2>Forgot Password</h2>
+      <div class="card" style="max-width:480px; margin: 0 auto;">
+        <div class="form-group">
+          <label for="fpIdentifier">Username or Email</label>
+          <input id="fpIdentifier" type="text" placeholder="Enter your username or email" />
+        </div>
+        <div class="form-group">
+          <label for="fpMobile">Registered Mobile Number</label>
+          <input id="fpMobile" type="tel" placeholder="Enter registered mobile number" />
+        </div>
+        <div class="form-group">
+          <label for="fpRole">Role</label>
+          <select id="fpRole">
+            <option value="">Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="frontoffice">Front Office</option>
+            <option value="manager">Manager</option>
+            <option value="employee">Employee</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button id="sendOtpBtn" class="btn primary">Send OTP</button>
+          <input id="fpOtpInput" type="text" placeholder="Enter OTP" style="max-width: 160px;" />
+          <button id="verifyOtpBtn" class="btn secondary">Verify OTP</button>
+          <button id="sendResetBtn" class="btn secondary">Send Reset</button>
+          <button id="copyTempBtn" class="btn small secondary">Copy Temp Password</button>
+          <button class="btn secondary back-btn" data-target="loginPage">Back</button>
+        </div>
+        <div style="margin-top:12px;">
+          <label style="display:flex; align-items:center; gap:8px;">
+            <input id="fpResetNowToggle" type="checkbox" />
+            <span>Reset now (set a new password)</span>
+          </label>
+        </div>
+        <div id="fpResetNowSection" class="form-group hidden" style="margin-top:12px;">
+          <label for="fpNewPassword">New Password</label>
+          <input id="fpNewPassword" type="password" />
+          <label for="fpConfirmPassword">Confirm Password</label>
+          <input id="fpConfirmPassword" type="password" />
+          <button id="fpResetNowBtn" class="btn primary" style="margin-top:8px;">Reset Password Now</button>
+        </div>
+        <p id="fpMsg" class="success-msg"></p>
+        <p id="fpErr" class="error-msg"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Dashboards Container -->
+  <main id="dashboards" class="hidden">
+
+    <!-- New Company Page -->
+    <section id="newCompanyPage" class="dashboard hidden">
+      <h2>Add New Company</h2>
+      <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <div class="form-group">
+          <label for="companyName">Company Name</label>
+          <input id="companyName" type="text" />
+        </div>
+        <div class="form-group">
+          <label for="companyPhone">Phone Number</label>
+          <input id="companyPhone" type="tel" />
+        </div>
+        <div class="form-group">
+          <label for="companyEmail">Email</label>
+          <input id="companyEmail" type="email" />
+        </div>
+        <div class="form-group">
+          <label for="companyGST">GST No</label>
+          <input id="companyGST" type="text" />
+        </div>
+        <div class="form-group">
+          <label for="companyAddr1">Address Line 1</label>
+          <input id="companyAddr1" type="text" />
+        </div>
+        <div class="form-group">
+          <label for="companyAddr2">Address Line 2</label>
+          <input id="companyAddr2" type="text" />
+        </div>
+        <div class="form-group">
+          <label for="companyAddr3">Address Line 3</label>
+          <input id="companyAddr3" type="text" />
+        </div>
+        <div class="form-group">
+          <label for="companyPincode">Pincode</label>
+          <input id="companyPincode" type="text" />
+        </div>
+        <button id="addCompanyBtn" class="btn primary">Add Company</button>
+        <button id="cancelCompanyBtn" class="btn secondary">Cancel</button>
+        <p id="companyAddMsg" class="success-msg"></p>
+        <p id="companyAddErr" class="error-msg"></p>
+      </div>
+    </section>
+
+    <!-- New Call Group Page -->
+    <section id="newGroupPage" class="dashboard hidden">
+      <h2>Add / Edit Call Group</h2>
+      <div class="card" style="max-width: 700px; margin: 0 auto;">
+        <div class="form-group">
+          <label for="groupName">Group Name</label>
+          <input id="groupName" type="text" />
+        </div>
+        <div class="form-group">
+          <label for="groupCallType">Call Type</label>
+          <select id="groupCallType">
+            <option value="">Select Call Type</option>
+            <option value="Printer Problem">Printer Problem</option>
+            <option value="Computer Problem">Computer Problem</option>
+            <option value="Network Issue">Network Issue</option>
+            <option value="Software Issue">Software Issue</option>
+            <option value="Hardware Problem">Hardware Problem</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="groupServices">Services (comma separated)</label>
+          <input id="groupServices" type="text" placeholder="e.g. IT Support, Sales" />
+        </div>
+
+        <div class="form-group">
+          <label>Assign Managers</label>
+          <div id="groupManagersList"></div>
+        </div>
+
+        <button id="addGroupBtn" class="btn primary">Save Group</button>
+        <button id="cancelGroupBtn" class="btn secondary">Cancel</button>
+        <p id="groupAddMsg" class="success-msg"></p>
+        <p id="groupAddErr" class="error-msg"></p>
+      </div>
+    </section>
+
+    <!-- New Customer Page -->
+    <section id="newCustomerPage" class="dashboard hidden">
+      <h2>Add New Customer</h2>
+      <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <div class="form-group">
+          <label for="newCustName">Customer Name</label>
+          <input id="newCustName" type="text" />
+        </div>
+        <div class="form-group">
+          <label for="newCustPhone">Phone Number</label>
+          <input id="newCustPhone" type="tel" />
+        </div>
+        <div class="form-group">
+          <label for="newCustEmail">Email</label>
+          <input id="newCustEmail" type="email" />
+        </div>
+        <div class="form-group">
+          <label for="newCustCompany">Company</label>
+          <select id="newCustCompany">
+            <option value="">Select Company</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="newCustAddr1">Address Line 1</label>
+          <input id="newCustAddr1" type="text" />
+        </div>
+        <div class="form-group">
+          <label for="newCustAddr2">Address Line 2</label>
+          <input id="newCustAddr2" type="text" />
+        </div>
+        <div class="form-group">
+          <label for="newCustAddr3">Address Line 3</label>
+          <input id="newCustAddr3" type="text" />
+        </div>
+        <div class="form-group">
+          <label for="newCustPincode">Pincode</label>
+          <input id="newCustPincode" type="text" />
+        </div>
+        <button id="addCustomerBtn" class="btn primary">Add Customer</button>
+        <button id="cancelCustomerBtn" class="btn secondary">Cancel</button>
+        <p id="customerAddMsg" class="success-msg"></p>
+        <p id="customerAddErr" class="error-msg"></p>
+      </div>
+    </section>
+
+    <!-- Admin Dashboard - Master Control Center -->
+    <section id="adminDashboard" class="dashboard admin-theme hidden">
+      <h2>Admin Control Center</h2>
+
+      <!-- Navigation Tabs -->
+      <div class="card" style="margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">
+        <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 0;">
+          <button class="admin-nav-tab active" data-tab="overview">Overview</button>
+          <button class="admin-nav-tab" data-tab="employees">Employees</button>
+          <button class="admin-nav-tab" data-tab="managersGroups">Managers & Groups</button>
+          <button class="admin-nav-tab" data-tab="managerEmployees">Manager Employees</button>
+          <button class="admin-nav-tab" data-tab="otherEmployees">Other Employees</button>
+          <button class="admin-nav-tab" data-tab="customers">Customers</button>
+          <button class="admin-nav-tab" data-tab="tickets">Tickets</button>
+          <button class="admin-nav-tab" data-tab="reports">Reports</button>
+          <button class="admin-nav-tab" data-tab="admins">Admins</button>
+        </div>
+      </div>
+
+      <!-- Overview Tab -->
+      <div id="adminTabOverview" class="admin-tab-content">
+        <div class="card">
+          <h3>System Overview & Statistics</h3>
+          <div class="grid-2">
+            <div style="padding: 15px; background: rgba(255, 215, 0, 0.1); border-radius: 10px; border-left: 4px solid #ffd700;">
+              <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 8px;">Total Employees</div>
+              <p id="statTotalEmployees" style="font-size: 28px; font-weight: 800; color: #ffd700; margin: 0;">0</p>
+            </div>
+            <div style="padding: 15px; background: rgba(255, 165, 0, 0.1); border-radius: 10px; border-left: 4px solid #ffa500;">
+              <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 8px;">Total Managers</div>
+              <p id="statTotalManagers" style="font-size: 28px; font-weight: 800; color: #ffa500; margin: 0;">0</p>
+            </div>
+            <div style="padding: 15px; background: rgba(144, 238, 144, 0.1); border-radius: 10px; border-left: 4px solid #90ee90;">
+              <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 8px;">Total Tickets</div>
+              <p id="statTotalTickets" style="font-size: 28px; font-weight: 800; color: #90ee90; margin: 0;">0</p>
+            </div>
+            <div style="padding: 15px; background: rgba(135, 206, 235, 0.1); border-radius: 10px; border-left: 4px solid #87ceeb;">
+              <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 8px;">Pending Tickets</div>
+              <p id="statPendingTickets" style="font-size: 28px; font-weight: 800; color: #87ceeb; margin: 0;">0</p>
+            </div>
+            <div style="padding: 15px; background: rgba(81, 207, 102, 0.1); border-radius: 10px; border-left: 4px solid #51cf66;">
+              <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 8px;">Completed Tickets</div>
+              <p id="statCompletedTickets" style="font-size: 28px; font-weight: 800; color: #51cf66; margin: 0;">0</p>
+            </div>
+            <div style="padding: 15px; background: rgba(255, 107, 107, 0.1); border-radius: 10px; border-left: 4px solid #ff6b6b;">
+              <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 8px;">Total Call Groups</div>
+              <p id="statTotalGroups" style="font-size: 28px; font-weight: 800; color: #ff6b6b; margin: 0;">0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employees Tab -->
+      <div id="adminTabEmployees" class="admin-tab-content hidden">
+        <div class="card">
+          <h3>Employee Management</h3>
+          <button id="adminAddEmployeeBtn" class="btn primary" style="margin-bottom: 20px;">+ Add New Employee</button>
+          
+          <!-- Add Employee Form -->
+          <div id="addEmployeeForm" class="hidden" style="margin-bottom: 20px; padding: 20px; background: rgba(255,255,255,0.06); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+            <h4>Add New Employee</h4>
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="empName">Full Name</label>
+                <input id="empName" type="text" placeholder="Employee Name" />
+              </div>
+              <div class="form-group">
+                <label for="empEmail">Email Address</label>
+                <input id="empEmail" type="email" placeholder="employee@company.com" />
+              </div>
+              <div class="form-group">
+                <label for="empPhone">Phone Number</label>
+                <input id="empPhone" type="tel" placeholder="Employee mobile number" />
+              </div>
+              <div class="form-group">
+                <label for="empPassword">Password</label>
+                <input id="empPassword" type="password" placeholder="Set password" />
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button id="saveEmployeeBtn" class="btn primary">Save Employee</button>
+              <button id="cancelEmployeeBtn" class="btn secondary">Cancel</button>
+            </div>
+            <p id="empAddMsg" class="success-msg"></p>
+            <p id="empAddErr" class="error-msg"></p>
+          </div>
+
+          <!-- Employees Table -->
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Manager</th>
+                <th>Tasks Assigned</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="employeesTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      
+
+<!-- MANAGERS & CALL GROUPS COMBINED TAB -->
+<div id="adminTabManagersGroups" class="admin-tab-content hidden">
+  <div class="card">
+    <h3>Managers & Call Groups Management</h3>
+    
+    <!-- Add New Manager Button -->
+    <button id="adminAddManagerBtn" class="btn primary" style="margin-bottom: 20px;">
+      + Add New Manager
+    </button>
+
+    <!-- Add Manager Form -->
+    <div id="addManagerForm" class="hidden" style="margin-bottom: 20px; padding: 20px; background: rgba(255,255,255,0.06); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+      <h4>Add New Manager</h4>
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="mgrName">Full Name</label>
+          <input id="mgrName" type="text" placeholder="Manager Name">
+        </div>
+        <div class="form-group">
+          <label for="mgrEmail">Email Address</label>
+          <input id="mgrEmail" type="email" placeholder="manager@company.com">
+        </div>
+        <div class="form-group">
+          <label for="mgrPhone">Mobile Number</label>
+          <input id="mgrPhone" type="tel" placeholder="Manager mobile number">
+        </div>
+        <div class="form-group">
+          <label for="mgrPassword">Password</label>
+          <input id="mgrPassword" type="password" placeholder="Set password">
+        </div>
+      </div>
+
+      <!-- DROPDOWN FOR CALL GROUPS -->
+      <div class="form-group">
+        <label for="mgrGroupsUI">Select Call Groups to Manage</label>
+        <div id="mgrGroupsUI" class="form-group">
+          <button id="mgrGroupsToggle" class="btn secondary">-- Select Groups --</button>
+          <div id="mgrGroupsMenu" class="hidden" style="margin-top:8px;">
+            <div id="mgrGroupsOptions" class="inline-options"></div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button id="mgrGroupsApplyBtn" class="btn primary">Apply</button>
+              <button id="mgrGroupsCancelBtn" class="btn secondary">Close</button>
+            </div>
+          </div>
+        </div>
+        <select id="mgrCallGroupDropdown" multiple class="hidden">
+          <option value="">-- Select Groups --</option>
+        </select>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button id="saveManagerBtn" class="btn primary">Save Manager</button>
+        <button id="cancelManagerBtn" class="btn secondary">Cancel</button>
+      </div>
+      <p id="mgrAddMsg" class="success-msg"></p>
+      <p id="mgrAddErr" class="error-msg"></p>
+    </div>
+
+    <!-- Managers Table -->
+    <h4 style="margin-top: 30px; margin-bottom: 16px;">Managers List</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Managing Groups</th>
+          <th>Pending Tickets</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="managersTableBody"></tbody>
+    </table>
+
+    <!-- Call Groups Section -->
+    <h3 style="margin-top: 40px;">Call Groups</h3>
+    <button id="adminAddGroupBtn" class="btn primary" style="margin-bottom: 20px;">
+      + Create New Call Group
+    </button>
+
+    <!-- Add Group Form -->
+    <div id="addGroupForm" class="hidden" style="margin-bottom: 20px; padding: 20px; background: rgba(255,255,255,0.06); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+      <h4>Create Call Group</h4>
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="groupCallType">Call Type</label>
+          <select id="groupCallType">
+            <option value="">-- Select Call Type --</option>
+            <option value="Service">Service</option>
+            <option value="Sales">Sales</option>
+            <option value="Installation">Installation</option>
+            <option value="Complaints">Complaints</option>
+            <option value="CCTV">CCTV</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="groupName">Group Name Number</label>
+          <input id="groupName" type="text" placeholder="e.g., Group 1, Team A, etc.">
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button id="saveGroupBtn" class="btn primary">Save Group</button>
+        <button id="cancelGroupBtn" class="btn secondary">Cancel</button>
+      </div>
+      <p id="groupAddMsg" class="success-msg"></p>
+      <p id="groupAddErr" class="error-msg"></p>
+    </div>
+
+    <!-- Call Groups Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Group ID</th>
+          <th>Call Type</th>
+          <th>Group Name</th>
+          <th>Tickets Assigned</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="callGroupsTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+
+      <!-- Manager Employees Tab -->
+      <div id="adminTabManagerEmployees" class="admin-tab-content hidden">
+        <div class="card">
+          <h3>Manager Employees (Hire & Assign)</h3>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="hireMgrSelect">Select Manager</label>
+              <select id="hireMgrSelect"></select>
+            </div>
+            <div class="form-group">
+              <label>Mode</label>
+              <div class="inline-options">
+                <label><input type="radio" name="hireMode" id="hireModeExisting" checked /> Existing Employee</label>
+                <label><input type="radio" name="hireMode" id="hireModeNew" /> Create New Employee</label>
+              </div>
+            </div>
+          </div>
+
+          <div id="hireExistingBox" class="form-group">
+            <label for="hireEmpSelect">Select Employee (unassigned)</label>
+            <select id="hireEmpSelect"></select>
+          </div>
+
+          <div id="hireNewBox" class="hidden">
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="hireEmpName">Employee Name</label>
+                <input id="hireEmpName" type="text" />
+              </div>
+              <div class="form-group">
+                <label for="hireEmpEmail">Email</label>
+                <input id="hireEmpEmail" type="email" />
+              </div>
+              <div class="form-group">
+                <label for="hireEmpPhone">Phone</label>
+                <input id="hireEmpPhone" type="tel" />
+              </div>
+              <div class="form-group">
+                <label for="hireEmpPassword">Temp Password</label>
+                <input id="hireEmpPassword" type="password" />
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px;">
+            <button id="hireEmployeeBtn" class="btn primary">Hire / Assign</button>
+            <button id="refreshHireDataBtn" class="btn secondary">Refresh</button>
+          </div>
+          <p id="hireMsg" class="success-msg"></p>
+          <p id="hireErr" class="error-msg"></p>
+
+          <h4 style="margin-top:20px;">Managers and Team Size</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Manager ID</th>
+                <th>Manager Name</th>
+                <th>Team Size</th>
+              </tr>
+            </thead>
+            <tbody id="managerEmployeesTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Customers Tab -->
+      <div id="adminTabCustomers" class="admin-tab-content hidden">
+        <div class="card">
+          <h3>Customers Management</h3>
+          <button id="adminAddCustomerBtn" class="btn primary" style="margin-bottom: 20px;">+ Add New Customer</button>
+
+          <!-- Add Customer Form -->
+          <div id="addCustomerForm" class="hidden" style="margin-bottom: 20px; padding: 20px; background: rgba(255,255,255,0.06); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+            <h4>Add New Customer</h4>
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="custName">Customer Name</label>
+                <input id="custName" type="text" />
+              </div>
+              <div class="form-group">
+                <label for="custEmail">Email</label>
+                <input id="custEmail" type="email" />
+              </div>
+              <div class="form-group">
+                <label for="custPhone">Phone</label>
+                <input id="custPhone" type="tel" />
+              </div>
+              <div class="form-group">
+                <label for="custCompany">Company (if corporate)</label>
+                <select id="custCompany">
+                  <option value="">-- Select Company --</option>
+                </select>
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button id="saveCustomerBtn" class="btn primary">Save Customer</button>
+              <button id="cancelCustomerFormBtn" class="btn secondary">Cancel</button>
+            </div>
+            <p id="customerAddMsg" class="success-msg"></p>
+            <p id="customerAddErr" class="error-msg"></p>
+          </div>
+
+          <!-- Customers Table -->
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Type</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tickets Tab -->
+      <div id="adminTabTickets" class="admin-tab-content hidden">
+        <div class="card">
+          <h3>All Tickets Overview</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Ticket ID</th>
+                <th>Customer</th>
+                <th>Service Type</th>
+                <th>Status</th>
+                <th>Assigned Manager</th>
+                <th>Assigned Employee</th>
+                <th>Created Date</th>
+              </tr>
+            </thead>
+            <tbody id="adminTicketsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Reports Tab -->
+      <div id="adminTabReports" class="admin-tab-content hidden">
+        <div class="card">
+          <h3>Reports & Analytics</h3>
+          <div class="grid-2">
+            <div style="padding: 15px; background: rgba(255,255,255,0.06); border-radius: 10px;">
+              <h4>Tickets by Status</h4>
+              <ul id="reportTicketsByStatus" style="list-style: none; padding: 0;"></ul>
+            </div>
+            <div style="padding: 15px; background: rgba(255,255,255,0.06); border-radius: 10px;">
+              <h4>Employees Performance</h4>
+              <ul id="reportEmployeePerformance" style="list-style: none; padding: 0;"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admins Tab -->
+      <div id="adminTabAdmins" class="admin-tab-content hidden">
+        <div class="card">
+          <h3>Admin Management</h3>
+          <button id="adminAddAdminBtn" class="btn primary" style="margin-bottom: 20px;">+ Add New Admin</button>
+
+          <!-- Add Admin Form -->
+          <div id="addAdminForm" class="hidden" style="margin-bottom: 20px; padding: 20px; background: rgba(255,255,255,0.06); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+            <h4>Add / Edit Admin</h4>
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="admName">Full Name</label>
+                <input id="admName" type="text" placeholder="Admin Name" />
+              </div>
+              <div class="form-group">
+                <label for="admEmail">Email Address</label>
+                <input id="admEmail" type="email" placeholder="admin@company.com" />
+              </div>
+              <div class="form-group">
+                <label for="admUsername">Username</label>
+                <input id="admUsername" type="text" placeholder="e.g., admin2" />
+              </div>
+              <div class="form-group">
+                <label for="admPassword">Password</label>
+                <input id="admPassword" type="password" placeholder="Set password" />
+              </div>
+            </div>
+
+            <div class="form-group" style="display:flex; gap:16px; align-items:center;">
+              <label style="min-width:120px;">Access Permissions</label>
+              <div style="display:flex; gap:12px;">
+                <label><input id="admCanEdit" type="checkbox" checked /> Can Edit</label>
+                <label><input id="admCanDelete" type="checkbox" checked /> Can Delete</label>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+              <button id="saveAdminBtn" class="btn primary">Save Admin</button>
+              <button id="cancelAdminBtn" class="btn secondary">Cancel</button>
+            </div>
+            <p id="adminAddMsg" class="success-msg"></p>
+            <p id="adminAddErr" class="error-msg"></p>
+          </div>
+
+          <!-- Admins Table -->
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Permissions</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <button class="btn secondary" id="logoutFromAdmin" style="margin-top: 20px;">Logout</button>
+    </section>
+
+    <!-- Front Office Dashboard -->
+    <section id="frontOfficeDashboard" class="dashboard frontoffice-theme hidden">
+      <h2>Create Ticket</h2>
+
+      <div class="card" style="max-width: 700px; margin: 0 auto;">
+        <!-- Step 1: Customer Type Selection -->
+        <h3>Step 1: Customer Type</h3>
+        <div class="form-group">
+          <label for="foCustType">Select Customer Type</label>
+          <select id="foCustType">
+            <option value="">-- Select Type --</option>
+            <option value="individual">Individual</option>
+            <option value="corporate">Corporate</option>
+          </select>
+        </div>
+
+        <!-- Step 2: Customer Selection/Creation -->
+        <div id="foCustomerSelectionSection" class="hidden">
+          <h3>Step 2: Customer Information</h3>
+          
+          <div style="display: flex; gap: 10px; margin-bottom: 18px;">
+            <button type="button" id="foExistingCustBtn" class="btn secondary" style="flex: 1; margin: 0;">Select Existing</button>
+            <button type="button" id="foNewCustBtn" class="btn primary" style="flex: 1; margin: 0;">+ Add New Customer</button>
+          </div>
+          
+          <div class="form-group">
+            <label>Customer Type</label>
+            <div class="customer-type-box" id="custTypeBox" style="display: none; margin-bottom: 12px; padding: 8px 12px; background: rgba(255,255,255,0.06); border-radius: 8px; border-left: 3px solid #e84c3d; color: rgba(255,255,255,0.9); font-size: 13px;"></div>
+          </div>
+
+          <!-- Existing Customer Section -->
+          <div id="foExistingCustSection" class="hidden">
+            <div class="form-group">
+              <label for="foSelectExistingCust">Select Customer / Company</label>
+              <select id="foSelectExistingCust"></select>
+            </div>
+          </div>
+
+          <!-- New Customer Section -->
+          <div id="foNewCustForm" class="hidden">
+            <div class="form-group">
+              <label>Customer Type</label>
+              <div id="foNewCustTypeDisplay" style="padding: 10px 14px; background: rgba(232, 76, 61, 0.15); border-radius: 8px; border-left: 3px solid #e84c3d; color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 600; margin-bottom: 12px;"></div>
+            </div>
+            
+            <div class="form-group">
+              <label for="foNewCustName">Name</label>
+              <input id="foNewCustName" type="text" placeholder="Customer or Company Name" />
+            </div>
+            
+            <div id="foCompanyNameDiv" class="form-group hidden">
+              <label for="foNewCompanyName">Company Name</label>
+              <input id="foNewCompanyName" type="text" placeholder="Company Name" />
+            </div>
+
+            <div class="form-group">
+              <label for="foNewCustPhone">Phone Number</label>
+              <input id="foNewCustPhone" type="tel" placeholder="Mobile Number" />
+            </div>
+
+            <div class="form-group">
+              <label for="foNewCustEmail">Email Address</label>
+              <input id="foNewCustEmail" type="email" placeholder="Email Address" />
+            </div>
+
+            <div class="form-group">
+              <label for="foNewCustAddress">Address</label>
+              <input id="foNewCustAddress" type="text" placeholder="Full Address" />
+            </div>
+
+            <div class="form-group">
+              <label for="foNewCustGST">GST Number</label>
+              <input id="foNewCustGST" type="text" placeholder="GST Number (if applicable)" />
+            </div>
+
+            <div id="foContactPersonDiv" class="form-group hidden">
+              <label for="foNewContactPerson">Contact Person Name</label>
+              <input id="foNewContactPerson" type="text" placeholder="Contact Person Name" />
+            </div>
+
+            <button type="button" id="foSaveNewCustBtn" class="btn primary">Save Customer</button>
+            <button type="button" id="foCancelNewCustBtn" class="btn secondary" style="margin-left: 8px;">Cancel</button>
+            <p id="foNewCustMsg" class="success-msg"></p>
+            <p id="foNewCustErr" class="error-msg"></p>
+          </div>
+        </div>
+
+        <!-- Step 3: Issue Details -->
+        <div id="foIssueDetailsSection" class="hidden">
+          <h3>Step 3: Issue Details & Auto-Assigned Manager</h3>
+          
+          <div class="form-group">
+            <label for="foCallType">Department / Call Type</label>
+            <select id="foCallType">
+              <option value="">-- Select Department --</option>
+              <option value="Sales">Sales</option>
+              <option value="Installation">Installation</option>
+              <option value="Services">Services</option>
+              <option value="Complaints">Complaints</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="foCallGroup">Select Group (Auto-assigns Managers)</label>
+            <select id="foCallGroup">
+              <option value="">-- Select Group --</option>
+            </select>
+            <div id="foAutoAssignedManagers" style="margin-top: 8px; padding: 10px 12px; background: rgba(81, 207, 102, 0.1); border-radius: 8px; border-left: 3px solid #51cf66; color: rgba(255,255,255,0.9); font-size: 13px; display: none;"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="foProblemTitle">Problem Title</label>
+            <input id="foProblemTitle" type="text" placeholder="Brief title of the issue" />
+          </div>
+
+          <div class="form-group">
+            <label for="foProblemDesc">Detailed Problem Description</label>
+            <textarea id="foProblemDesc" placeholder="Describe the issue in detail..." style="min-height: 120px;"></textarea>
+          </div>
+
+          <button id="foCreateTicketBtn" class="btn primary">Create Ticket</button>
+          <p id="foTicketMsg" class="success-msg"></p>
+          <p id="foTicketErr" class="error-msg"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>My Tickets</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Customer</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th>Assigned Manager</th>
+              <th>Date Created</th>
+            </tr>
+          </thead>
+          <tbody id="foMyTicketsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Finance Dashboard -->
+    <section id="financeDashboard" class="dashboard hidden">
+      <h2>Finance Dashboard</h2>
+      <div class="card">
+        <h3>Tickets Awaiting Payment</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Customer</th>
+              <th>Service</th>
+              <th>Amount</th>
+              <th>Payment Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="financeTicketsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Manager Dashboard -->
+    <section id="managerDashboard" class="dashboard manager-theme hidden">
+      <h2>Manager Dashboard</h2>
+
+      <div class="card">
+        <h3>Pending Tickets (To Assign)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Customer</th>
+              <th>Call Type</th>
+              <th>Call Group</th>
+              <th>Service</th>
+              <th>Raised Date</th>
+              <th>Assign To</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="pendingTicketsTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Assigned Tickets</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Customer</th>
+              <th>Service</th>
+              <th>Employee</th>
+              <th>Accepted On</th>
+              <th>Status</th>
+              <th>Reassign</th>
+            </tr>
+          </thead>
+          <tbody id="assignedTicketsTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>My Employees</h3>
+        <div class="form-group">
+          <label for="managerEmployeesSelect">Select Employees</label>
+          <select id="managerEmployeesSelect" multiple style="min-height: 120px;"></select>
+        </div>
+        <ul id="managerEmployeesList" style="list-style: none; padding: 0;"></ul>
+      </div>
+
+      <div class="card">
+        <h3>Task Progress Reports from Employees</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Customer</th>
+              <th>Employee</th>
+              <th>Task Status</th>
+              <th>Progress</th>
+              <th>Started Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="taskReportsTableBody"></tbody>
+        </table>
+      </div>
+
+      <button class="btn secondary" id="logoutFromManager">Logout</button>
+    </section>
+
+    <!-- Employee Dashboard -->
+    <section id="employeeDashboard" class="dashboard employee-theme hidden">
+      <h2>Employee Dashboard - On-Site Service Tasks</h2>
+
+      <!-- Pending Tasks (Need to Accept/Reject/Swap) -->
+      <div class="card">
+        <h3>Pending Tasks (Awaiting Your Response)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Customer Name</th>
+              <th>Location / Address</th>
+              <th>Service Type</th>
+              <th>Issue Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="employeePendingTasksTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Task Response Modal -->
+      <div id="taskResponseModal" class="hidden card" style="max-width: 600px; margin: 20px auto;">
+        <h3>Respond to Task Assignment</h3>
+        <div id="taskResponseContent"></div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button id="acceptTaskBtn" class="btn primary" style="flex: 1; margin: 0;">Accept Task</button>
+          <button id="rejectTaskBtn" class="btn secondary" style="flex: 1; margin: 0;">Reject Task</button>
+          <button id="swapTaskBtn" class="btn secondary" style="flex: 1; margin: 0;">Request Swap</button>
+        </div>
+        <div class="form-group hidden" id="swapReasonDiv" style="margin-top: 15px;">
+          <label for="swapReason">Why do you want to swap?</label>
+          <textarea id="swapReason" placeholder="Explain your reason for requesting a swap..."></textarea>
+          <button id="submitSwapBtn" class="btn primary" style="margin-top: 10px;">Submit Swap Request</button>
+        </div>
+        <button id="closeTaskResponseBtn" class="btn secondary" style="margin-top: 15px; width: 100%;">Cancel</button>
+        <p id="taskResponseMsg" class="success-msg"></p>
+        <p id="taskResponseErr" class="error-msg"></p>
+      </div>
+
+      <!-- Active Tasks (In Progress) -->
+      <div class="card">
+        <h3>Active Tasks (Currently Working)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Customer</th>
+              <th>Service Type</th>
+              <th>Estimated Duration</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="employeeActiveTasksTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Task Work Tracking Panel -->
+      <div id="taskWorkPanel" class="hidden card" style="max-width: 800px; margin: 20px auto; background: rgba(255, 165, 0, 0.08); border-left: 4px solid #ffa500;">
+        <h3>Task Work Tracking & Time Management</h3>
+
+        <!-- Task Header -->
+        <div id="workTaskHeader" style="padding: 15px; background: rgba(255, 165, 0, 0.12); border-radius: 8px; margin-bottom: 20px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+              <label style="color: rgba(255,255,255,0.7); font-size: 12px;">Ticket ID</label>
+              <p id="workTicketId" style="font-size: 18px; font-weight: 800; color: #ffa500; margin: 4px 0;"></p>
+            </div>
+            <div>
+              <label style="color: rgba(255,255,255,0.7); font-size: 12px;">Customer Location</label>
+              <p id="workCustomerLocation" style="font-size: 14px; color: rgba(255,255,255,0.9); margin: 4px 0;"></p>
+            </div>
+            <div>
+              <label style="color: rgba(255,255,255,0.7); font-size: 12px;">Service Type</label>
+              <p id="workServiceType" style="font-size: 14px; color: rgba(255,255,255,0.9); margin: 4px 0;"></p>
+            </div>
+            <div>
+              <label style="color: rgba(255,255,255,0.7); font-size: 12px;">Estimated Duration</label>
+              <p id="workEstimatedDuration" style="font-size: 14px; color: rgba(255,255,255,0.9); margin: 4px 0;"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Time Tracking -->
+        <div class="form-group">
+          <label>Work Time Tracking</label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div style="padding: 12px; background: rgba(255,255,255,0.06); border-radius: 8px; text-align: center;">
+              <div style="color: rgba(255,255,255,0.7); font-size: 11px; margin-bottom: 4px;">Actual Start Time</div>
+              <input id="workStartTime" type="time" style="width: 100%;"/>
+            </div>
+            <div style="padding: 12px; background: rgba(255,255,255,0.06); border-radius: 8px; text-align: center;">
+              <div style="color: rgba(255,255,255,0.7); font-size: 11px; margin-bottom: 4px;">Current Status</div>
+              <p id="workCurrentStatus" style="font-weight: 800; color: #ffa500; margin: 0;">Not Started</p>
+            </div>
+            <div style="padding: 12px; background: rgba(255,255,255,0.06); border-radius: 8px; text-align: center;">
+              <div style="color: rgba(255,255,255,0.7); font-size: 11px; margin-bottom: 4px;">Total Work Time</div>
+              <p id="workTotalTime" style="font-weight: 800; color: #90ee90; margin: 0;">0h 0m</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Break Management -->
+        <div class="form-group">
+          <label>Break Management</label>
+          <div style="display: flex; gap: 10px;">
+            <button id="startBreakBtn" class="btn secondary" style="flex: 1; margin: 0;">Start Break</button>
+            <button id="endBreakBtn" class="btn secondary hidden" style="flex: 1; margin: 0;">End Break</button>
+          </div>
+          <div id="breakInfo" style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; display: none;">
+            <p id="breakStatus" style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.8);"></p>
+          </div>
+          <div id="breakHistory" style="margin-top: 10px; max-height: 150px; overflow-y: auto;"></div>
+        </div>
+
+        <!-- Work Progress & Issue Updates -->
+        <div class="form-group">
+          <label for="workProgressUpdate">Work Progress Update</label>
+          <select id="workProgressUpdate">
+            <option value="">-- Select Current Status --</option>
+            <option value="Started">Just Started Work</option>
+            <option value="Diagnosis">Diagnosing Issue</option>
+            <option value="In-Progress">In Progress (Fixing)</option>
+            <option value="Testing">Testing Solution</option>
+            <option value="Near-Complete">Nearly Complete</option>
+            <option value="Completed">Task Completed</option>
+          </select>
+        </div>
+
+        <!-- Client Issues/Blockers -->
+        <div class="form-group">
+          <label for="workBlockers">Issues / Blockers at Site</label>
+          <textarea id="workBlockers" placeholder="Any issues you're facing? (e.g., Missing equipment, Network down, Hardware failure, Client unavailable, etc.)"></textarea>
+        </div>
+
+        <!-- On-Site Notes -->
+        <div class="form-group">
+          <label for="workNotes">On-Site Work Notes</label>
+          <textarea id="workNotes" placeholder="Technical details: What you've done, configurations changed, equipment used, etc."></textarea>
+        </div>
+
+        <!-- Estimated Time to Complete -->
+        <div class="form-group">
+          <label for="estimatedTimeToComplete">Estimated Time to Complete (minutes)</label>
+          <input id="estimatedTimeToComplete" type="number" min="15" max="480" placeholder="e.g., 60 for 1 hour" />
+        </div>
+
+        <!-- Photo/Screenshot Evidence -->
+        <div class="form-group">
+          <label for="workPhotoEvidence">Photo Evidence from Site</label>
+          <input id="workPhotoEvidence" type="file" accept="image/*" />
+          <div id="workPhotoPreview" style="margin-top: 10px;"></div>
+        </div>
+
+        <!-- Update & Submit Buttons -->
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button id="submitProgressUpdateBtn" class="btn primary" style="flex: 1; margin: 0;">Update Progress</button>
+          <button id="completeTaskBtn" class="btn primary" style="flex: 1; margin: 0; background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);">Mark Complete</button>
+          <button id="closeWorkPanelBtn" class="btn secondary" style="flex: 1; margin: 0;">Cancel</button>
+        </div>
+        <p id="workUpdateMsg" class="success-msg"></p>
+        <p id="workUpdateErr" class="error-msg"></p>
+      </div>
+
+      <!-- Completed Tasks -->
+      <div class="card">
+        <h3>Completed Tasks</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Customer</th>
+              <th>Service Type</th>
+              <th>Completed On</th>
+              <th>Total Work Time</th>
+              <th>View Details</th>
+            </tr>
+          </thead>
+          <tbody id="employeeCompletedTasksTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Task History -->
+      <div class="card">
+        <h3>My Task Performance</h3>
+        <div class="grid-2">
+          <div style="padding: 15px; background: rgba(255,255,255,0.06); border-radius: 8px; border-left: 4px solid #ffa500;">
+            <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 8px;">Tasks Completed Today</div>
+            <p id="tasksCompletedToday" style="font-size: 24px; font-weight: 800; color: #ffa500; margin: 0;">0</p>
+          </div>
+          <div style="padding: 15px; background: rgba(255,255,255,0.06); border-radius: 8px; border-left: 4px solid #90ee90;">
+            <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 8px;">Total Work Hours Today</div>
+            <p id="totalWorkHoursToday" style="font-size: 24px; font-weight: 800; color: #90ee90; margin: 0;">0h 0m</p>
+          </div>
+          <div style="padding: 15px; background: rgba(255,255,255,0.06); border-radius: 8px; border-left: 4px solid #87ceeb;">
+            <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 8px;">Avg Time per Task</div>
+            <p id="avgTimePerTask" style="font-size: 24px; font-weight: 800; color: #87ceeb; margin: 0;">--</p>
+          </div>
+          <div style="padding: 15px; background: rgba(255,255,255,0.06); border-radius: 8px; border-left: 4px solid #51cf66;">
+            <div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 8px;">Total Tasks This Month</div>
+            <p id="totalTasksMonth" style="font-size: 24px; font-weight: 800; color: #51cf66; margin: 0;">0</p>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn secondary" id="logoutFromEmployee">Logout</button>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
+    <!-- Finance / Payment Page -->
+    <section id="paymentPage" class="dashboard hidden">
+      <h2>Finance - Payment & Feedback</h2>
+      <div class="card" style="max-width: 640px; margin: 0 auto;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label>Ticket</label>
+            <p id="payTicketId"></p>
+          </div>
+          <div>
+            <label>Customer</label>
+            <p id="payCustomer"></p>
+          </div>
+          <div>
+            <label>Service</label>
+            <p id="payService"></p>
+          </div>
+          <div>
+            <label>Amount</label>
+            <p id="payAmount"></p>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="empManager">Assign Manager</label>
+          <select id="empManager">
+            <option value="">-- Select Manager --</option>
+          </select>
+        </div>
+      <div class="form-group">
+        <label>Payment</label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <select id="paymentStatusSelect">
+            <option value="pending">Payment Pending</option>
+            <option value="received">Payment Received</option>
+          </select>
+          <input id="paymentAmountInput" type="number" placeholder="Cash amount" min="0" step="0.01" />
+          <button id="payNowBtn" class="btn primary">Save Payment</button>
+        </div>
+        <p id="payMsg" class="success-msg"></p>
+      </div>
+      <div class="form-group">
+        <label>Payment History</label>
+        <ul id="paymentHistoryList" style="list-style:none; padding:0; margin:0;"></ul>
+      </div>
+        <div class="form-group">
+          <label>Finance Confirmation Text</label>
+          <input id="financeConfirmText" type="text" placeholder="Enter confirmation note" />
+        </div>
+        <div class="form-group">
+          <label>Feedback Rating</label>
+          <select id="feedbackRating">
+            <option value="5">5</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2">2</option>
+            <option value="1">1</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Feedback Comments</label>
+          <textarea id="feedbackComment" placeholder="Customer feedback..."></textarea>
+        </div>
+        <button id="submitFeedbackBtn" class="btn primary">Confirm & Complete Ticket</button>
+        <p id="feedbackMsg" class="success-msg"></p>
+        <button id="backToStatusBtn" class="btn secondary" style="margin-top: 10px;">Back</button>
+      </div>
+    </section>
+      <!-- Other Employees Tab -->
+      <div id="adminTabOtherEmployees" class="admin-tab-content hidden">
+        <div class="card">
+          <h3>Other Employees (Front Office & Finance)</h3>
+          <button id="adminAddOtherEmployeeBtn" class="btn primary" style="margin-bottom: 20px;">+ Add Other Employee</button>
+
+          <!-- Add Other Employee Form -->
+          <div id="addOtherEmployeeForm" class="hidden" style="margin-bottom: 20px; padding: 20px; background: rgba(255,255,255,0.06); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+            <h4>Add / Edit Other Employee</h4>
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="otherName">Full Name</label>
+                <input id="otherName" type="text" placeholder="Person Name" />
+              </div>
+              <div class="form-group">
+                <label for="otherEmail">Email Address</label>
+                <input id="otherEmail" type="email" placeholder="person@company.com" />
+              </div>
+              <div class="form-group">
+                <label for="otherPhone">Mobile Number</label>
+                <input id="otherPhone" type="tel" placeholder="Mobile number" />
+              </div>
+              <div class="form-group">
+                <label for="otherUsername">Username</label>
+                <input id="otherUsername" type="text" placeholder="e.g., finance2" />
+              </div>
+              <div class="form-group">
+                <label for="otherPassword">Password</label>
+                <input id="otherPassword" type="password" placeholder="Set password" />
+              </div>
+              <div class="form-group">
+                <label for="otherRole">Role</label>
+                <select id="otherRole">
+                  <option value="">-- Select Role --</option>
+                  <option value="frontoffice">Front Office</option>
+                  <option value="finance">Finance</option>
+                </select>
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button id="saveOtherEmployeeBtn" class="btn primary">Save</button>
+              <button id="cancelOtherEmployeeBtn" class="btn secondary">Cancel</button>
+            </div>
+            <p id="otherAddMsg" class="success-msg"></p>
+            <p id="otherAddErr" class="error-msg"></p>
+          </div>
+
+          <!-- Other Employees Table -->
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="otherEmployeesTableBody"></tbody>
+          </table>
+        </div>
+      </div>
