@@ -21,6 +21,34 @@ body {
   font-weight: 500;
 }
 
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 20px 12px;
+}
+
+.modal:not(.hidden) {
+  display: flex;
+}
+
+#managerVisitContent {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+}
+
 /* Header */
 header {
   background: rgba(21, 42, 58, 0.08);
@@ -80,6 +108,18 @@ main {
   padding: 24px 16px;
   max-width: 1400px;
   margin: 0 auto;
+}
+
+#loginPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+#loginPage .login-card {
+  margin: 0;
 }
 
 .hidden {
@@ -227,22 +267,23 @@ main {
 }
 
 .btn.primary {
-  background: #e84c3d;
+  background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
-  box-shadow: 0 8px 24px rgba(232, 76, 61, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(31, 38, 135, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
   border: none;
-  font-weight: 800;
-  letter-spacing: 0.4px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
 
 .btn.primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(232, 76, 61, 0.45);
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(31, 38, 135, 0.24);
 }
 
 .btn.primary:active {
-  transform: translateY(0px);
-  box-shadow: 0 4px 12px rgba(232, 76, 61, 0.35);
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(31, 38, 135, 0.18);
 }
 
 .btn.secondary {
@@ -282,15 +323,19 @@ main {
 }
 
 .success-msg {
-  color: #51cf66;
+  color: rgba(255, 255, 255, 0.95);
   font-size: 13px;
   margin-top: 10px;
-  background: rgba(81, 207, 102, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   padding: 12px 14px;
   border-radius: 8px;
-  border-left: 3px solid #51cf66;
+  border-left: 3px solid rgba(255, 255, 255, 0.2);
   animation: slideIn 0.3s ease;
   line-height: 1.5;
+}
+
+.success-msg:empty {
+  display: none;
 }
 
 @keyframes slideIn {
@@ -411,6 +456,20 @@ main {
 
 /* Grid */
 .grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.grid-4 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
@@ -684,8 +743,8 @@ select[multiple]:focus {
   }
 
   #appLogo {
-    width: 36px !important;
-    height: 36px !important;
+    width: 140px;
+    height: 60px;
   }
 
   #currentUserInfo {
@@ -720,6 +779,12 @@ select[multiple]:focus {
     gap: 16px;
   }
 
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
   .dashboard h2 {
     font-size: 24px;
     margin-bottom: 16px;
@@ -731,44 +796,31 @@ select[multiple]:focus {
   }
 
   table {
-    font-size: 13px;
+    font-size: 14px;
     overflow-x: auto;
     display: block;
   }
 
   thead {
-    display: none;
+    display: table-header-group;
   }
 
-  tbody, tr, td {
-    display: block;
-    width: 100%;
+  tbody {
+    display: table-row-group;
   }
-
   tr {
-    margin-bottom: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 8px;
-    background: rgba(255, 255, 255, 0.03);
+    display: table-row;
   }
-
   td {
-    border: none;
-    padding: 8px 0;
-    padding-left: 100px;
-    position: relative;
-    text-align: right;
-    min-height: 32px;
+    display: table-cell;
+    padding: 10px 12px;
+    text-align: left;
+    position: static;
+    min-height: auto;
   }
 
   td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 8px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
-    text-align: left;
+    content: none;
   }
 
   th, td {
@@ -778,9 +830,14 @@ select[multiple]:focus {
   .btn {
     padding: 10px 14px;
     font-size: 13px;
-    width: 100%;
     margin-bottom: 8px;
-    margin-right: 0;
+  }
+
+  /* removed full-width small buttons to avoid layout breaks */
+
+  #logoutBtn {
+    width: auto !important;
+    min-height: 40px;
   }
 
   .form-group input,
@@ -803,6 +860,16 @@ select[multiple]:focus {
     font-size: 24px;
     margin-bottom: 20px;
   }
+
+  .modal {
+    padding: 16px 10px;
+    align-items: center;
+  }
+
+  #managerVisitContent {
+    max-width: 92%;
+    border-radius: 12px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -819,8 +886,8 @@ select[multiple]:focus {
   }
 
   #appLogo {
-    width: 32px !important;
-    height: 32px !important;
+    width: 140px;
+    height: 60px;
   }
 
   #currentUserInfo {
@@ -846,10 +913,10 @@ select[multiple]:focus {
   }
 
   .login-card {
-    margin: 30px auto;
+    margin: 24px auto;
     padding: 20px;
     width: 100%;
-    max-width: 100%;
+    max-width: 380px;
   }
 
   .login-card h2 {
@@ -858,12 +925,12 @@ select[multiple]:focus {
   }
 
   .dashboard h2 {
-    font-size: 20px;
+    font-size: 22px;
     margin-bottom: 12px;
   }
 
   .dashboard h3 {
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .inline-options {
@@ -872,40 +939,111 @@ select[multiple]:focus {
   }
 
   table {
-    font-size: 12px;
+    font-size: 14px;
+    overflow-x: auto;
+    display: block;
   }
 
   td {
-    padding: 6px 0;
-    padding-left: 80px;
+    padding: 8px 10px;
+    text-align: left;
   }
 
   .btn {
-    padding: 10px 12px;
-    font-size: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    white-space: normal;
   }
+
+  /* removed full-width small buttons to avoid layout breaks */
+
+  /* keep inline options row-based for compact mobile layout */
+
+  /* rely on container width; no hard override */
+
+  /* unified padding retained from parent cards */
 
   .form-group input,
   .form-group select,
   .form-group textarea {
-    padding: 10px 12px;
-    font-size: 15px;
+    padding: 12px 14px;
+    font-size: 16px;
+    width: 100%;
   }
 
   .form-group {
     margin-bottom: 14px;
   }
 
-  .grid-2 {
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
     gap: 12px;
   }
+
+  .modal {
+    padding: 12px 8px;
+  }
+
+  #managerVisitContent {
+    max-width: 96%;
+    border-radius: 12px;
+  }
 }
+
+  #logoutBtn {
+    min-height: 36px;
+    width: auto !important;
+  }
 /* Global logout button fixed top-right */
 #logoutBtn.global-logout {
   position: fixed;
   top: 16px;
   right: 16px;
   z-index: 9999;
+}
+
+#logoutBtn.global-logout::after {
+  content: 'Under progress';
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+}
+/* Align section Sign Out buttons */
+#logoutFromAdmin,
+#logoutFromFrontOffice,
+#logoutFromManager,
+#logoutFromEmployee,
+#logoutFromHelpDesk,
+#logoutFromHR,
+#logoutFromFinance {
+  float: right;
+  margin-top: 16px;
+}
+
+@media (max-width: 480px) {
+  #logoutFromAdmin,
+  #logoutFromFrontOffice,
+  #logoutFromManager,
+  #logoutFromEmployee,
+  #logoutFromHelpDesk,
+  #logoutFromHR,
+  #logoutFromFinance {
+    float: none;
+    display: block;
+    width: 100%;
+    text-align: right;
+    margin-top: 14px;
+  }
 }
 /* Smooth popup for forgot password card */
 #forgotPasswordPage .card {
