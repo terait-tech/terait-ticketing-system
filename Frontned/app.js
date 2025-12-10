@@ -35,7 +35,7 @@ let customers = [
   {
     id: "CUS001",
     type: "individual",
-    name: "John Doe",
+    name: "cust",
     phone: "9876543210",
     email: "john@customer.com",
     address: "456 Customer Lane, Apt 5B, Downtown",
@@ -62,14 +62,18 @@ const employees = [
   { id: "E002", name: "Priya Sharma", email: "priya@company.com", phone: "9876543102", department: "Sales", password: "priya123", role: "employee" },
   { id: "E003", name: "Amit Singh", email: "amit@company.com", phone: "9876543103", department: "IT Support", password: "amit123", role: "employee" },
   { id: "E004", name: "Sample Employee", email: "employee@company.com", phone: "9876543104", department: "IT Support", password: "emp123", username: "employee", role: "employee" },
-  { id: "E005", name: "test1", email: "test1@company.com", phone: "9876543105", department: "IT Support", password: "123", username: "employee", role: "employee" }
+  { id: "E005", name: "test1", email: "test1@company.com", phone: "9876543105", department: "IT Support", password: "123", username: "employee", role: "employee" },
+  { id: "E006", name: "emp1", email: "emp@1", phone: "9876543105", department: "IT Support", password: "123", username: "emp1", role: "employee" },
+  { id: "E007", name: "emp2", email: "emp@2", phone: "9876543105", department: "IT Support", password: "123", username: "emp2", role: "employee" }
 ];
 
 let managers = [
-  { id: "M001", name: "Sales Manager", email: "sales.mgr@company.com", phone: "9876500001", password: "manager123", username: "mgr_sales", role: "manager", assignedGroups: ["GRP001"] },
-  { id: "M002", name: "Installation Manager", email: "install.mgr@company.com", phone: "9876500002", password: "manager123", username: "mgr_install", role: "manager", assignedGroups: ["GRP002"] },
-  { id: "M003", name: "Services Manager", email: "services.mgr@company.com", phone: "9876500003", password: "manager123", username: "mgr_services", role: "manager", assignedGroups: ["GRP003"] },
-  { id: "M004", name: "Complaints Manager", email: "complaints.mgr@company.com", phone: "9876500004", password: "manager123", username: "mgr_complaints", role: "manager", assignedGroups: ["GRP004"] }
+  { id: "M001", name: "Sales Manager", email: "sales.mgr@company.com", phone: "9876500001", password: "manager123", username: "mgr_sales", role: "manager", assignedGroups: ["GRP001"], assignedDepartments: ["Sales"] },
+  { id: "M002", name: "Installation Manager", email: "install.mgr@company.com", phone: "9876500002", password: "manager123", username: "mgr_install", role: "manager", assignedGroups: ["GRP002"], assignedDepartments: ["Technical", "IT", "CCTV", "Biometric"] },
+  { id: "M003", name: "Services Manager", email: "services.mgr@company.com", phone: "9876500003", password: "manager123", username: "mgr_services", role: "manager", assignedGroups: ["GRP003"], assignedDepartments: ["Technical", "IT", "CCTV", "Biometric"] },
+  { id: "M004", name: "Complaints Manager", email: "complaints.mgr@company.com", phone: "9876500004", password: "manager123", username: "mgr_complaints", role: "manager", assignedGroups: ["GRP004"], assignedDepartments: ["Technical", "IT", "CCTV", "Biometric"] },
+  // { id: "M005", name: "mgr1", email: "mgr@1", phone: "9876500004", password: "123", username: "mgr1", role: "manager", assignedGroups: ["GRP002"], assignedDepartments: ["sales"] },
+  // { id: "M006", name: "mgr2", email: "mgr@2", phone: "9876500004", password: "123", username: "mgr2", role: "manager", assignedGroups: ["GRP001"], assignedDepartments: ["Technical"] }
 ];
 
 // Call Groups structure
@@ -81,16 +85,28 @@ let callGroups = [
 ];
 
 let frontOfficeUsers = [
-  { id: "F001", name: "Front Office User", email: "frontoffice@company.com", phone: "9876511111", department: "Front Office", password: "office123", username: "frontoffice", role: "frontoffice" }
+  { id: "F001", name: "Front Office User", email: "frontoffice@company.com", phone: "9876511111", department: "Front Office", password: "123", username: "fo", role: "frontoffice" }
 ];
 
 let financeUsers = [
-  { id: "FN001", name: "Finance User", email: "finance@company.com", phone: "9876522222", department: "Finance", password: "finance123", username: "finance", role: "finance" }
+  { id: "FN001", name: "Finance User", email: "finance@company.com", phone: "9876522222", department: "Finance", password: "123", username: "finance", role: "finance" }
 ];
+
+// Help Desk users
+let helpDeskUsers = [
+  { id: "HD001", name: "Help Desk User", email: "helpdesk@company.com", phone: "9876533333", department: "Help Desk", password: "123", username: "helpdesk", role: "helpdesk" }
+];
+
+let hrUsers = [
+  { id: "HR001", name: "HR User", email: "hr@company.com", phone: "9876540000", department: "HR", password: "123", username: "hr", role: "hr" }
+];
+
+// Departments used by Help Desk
+const departmentsList = ["IT", "Technical", "CCTV", "Biometric", "Sales"];
 
 // Admin users with permissions
 let admins = [
-  { id: "A001", name: "Default Admin", email: "admin@company.com", username: "admin", password: "admin123", role: "admin", permissions: { canEdit: true, canDelete: true } }
+  { id: "A001", name: "Default Admin", email: "admin@company.com", username: "admin", password: "123", role: "admin", permissions: { canEdit: true, canDelete: true } }
 ];
 
 function getCurrentAdminPerms() {
@@ -154,8 +170,10 @@ let feedbacks = [];
 
 /* Service pricing */
 const servicePricing = {
-  "IT Support": 50,
-  "Sales": 30
+  "Installation": 200,
+  "Service": 100,
+  "Complaints": 50,
+  "Sales": 0
 };
 
 /* Utility functions */
@@ -192,6 +210,19 @@ function formatDateTime(dt = new Date()) {
 
 /* Action log for admin reporting */
 let systemLogs = [];
+function loadSystemLogs() {
+  try {
+    const raw = localStorage.getItem('systemLogs');
+    systemLogs = raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    systemLogs = [];
+  }
+}
+function saveSystemLogs() {
+  try {
+    localStorage.setItem('systemLogs', JSON.stringify(systemLogs));
+  } catch (e) {}
+}
 function logAction(actor, action, ticketId, details = '') {
   systemLogs.push({
     ts: new Date().toISOString(),
@@ -200,7 +231,11 @@ function logAction(actor, action, ticketId, details = '') {
     ticketId,
     details
   });
+  saveSystemLogs();
 }
+
+// initialize persisted logs on load
+loadSystemLogs();
 
 /* DOM helpers */
 function $(id) {
@@ -247,12 +282,15 @@ function showSection(sectionId) {
     "dashboards",
     "adminDashboard",
     "frontOfficeDashboard",
+    "financeDashboard",
     "managerDashboard",
     "employeeDashboard",
+    "helpDeskDashboard",
     "newCompanyPage",
     "newCustomerPage",
     "newGroupPage",
-    "forgotPasswordPage"
+    "forgotPasswordPage",
+    "paymentPage"
   ];
 
   idsToHide.forEach(id => {
@@ -309,6 +347,49 @@ function updateStats() {
   $("statTotalTickets").textContent = tickets.length;
   $("statPendingTickets").textContent = tickets.filter(t => t.status !== "Finished").length;
   $("statCompletedTickets").textContent = tickets.filter(t => t.status === "Finished").length;
+  updateRoleDashboards();
+}
+
+function updateRoleDashboards() {
+  if (!currentUser) return;
+  const role = currentUser.role;
+  if (role === 'frontoffice') {
+    const my = tickets.filter(t => t.frontOfficeUser === currentUser.userId);
+    const completed = my.filter(t => t.status === 'Finished' || t.status === 'Reported').length;
+    if ($('foStatMyTickets')) $('foStatMyTickets').textContent = my.length;
+    if ($('foStatCompleted')) $('foStatCompleted').textContent = completed;
+  } else if (role === 'helpdesk') {
+    const awaiting = tickets.filter(t => (!t.department || t.department === '') && (t.status === 'Raised' || t.status === 'Pending Assignment')).length;
+    const routed = tickets.filter(t => !!t.department).length;
+    if ($('hdStatAwaitingDept')) $('hdStatAwaitingDept').textContent = awaiting;
+    if ($('hdStatRouted')) $('hdStatRouted').textContent = routed;
+  } else if (role === 'manager') {
+    const myId = currentUser.userId;
+    const pendingAssign = tickets.filter(t => t.status === 'Pending Assignment' && t.assignedManagerIds && t.assignedManagerIds.includes(myId) && !t.acceptedByManager).length;
+    const assigned = tickets.filter(t => t.acceptedByManager === myId && (['Assigned','In Progress','Completed','Reported','Finished'].includes(t.status))).length;
+    const salesApproval = tickets.filter(t => t.routeToSales && t.status === 'Pending Sales Approval').length;
+    const handover = tickets.filter(t => t.acceptedByManager === myId && t.awaitingHandover).length;
+    if ($('mgrStatPendingAssign')) $('mgrStatPendingAssign').textContent = pendingAssign;
+    if ($('mgrStatAssigned')) $('mgrStatAssigned').textContent = assigned;
+    if ($('mgrStatSalesApproval')) $('mgrStatSalesApproval').textContent = salesApproval;
+    if ($('mgrStatHandover')) $('mgrStatHandover').textContent = handover;
+  } else if (role === 'employee') {
+    const myId = currentUser.userId;
+    const myTickets = tickets.filter(t => t.assignedEmployeeId === myId);
+    const pending = myTickets.filter(t => t.status === 'Assigned').length;
+    const inprog = myTickets.filter(t => t.status === 'In Progress').length;
+    const reported = myTickets.filter(t => t.status === 'Reported').length;
+    if ($('empStatPending')) $('empStatPending').textContent = pending;
+    if ($('empStatInProgress')) $('empStatInProgress').textContent = inprog;
+    if ($('empStatReported')) $('empStatReported').textContent = reported;
+  } else if (role === 'finance') {
+    const awaiting = tickets.filter(t => t.financeReady || (t.status === 'Reported' && t.verifiedByManager) || t.financeAdvanceRequired).length;
+    const part = tickets.filter(t => (t.paymentStatus || '').toLowerCase() === 'part payment').length;
+    const full = tickets.filter(t => (t.paymentStatus || '').toLowerCase() === 'full payment').length;
+    if ($('finStatAwaiting')) $('finStatAwaiting').textContent = awaiting;
+    if ($('finStatPart')) $('finStatPart').textContent = part;
+    if ($('finStatFull')) $('finStatFull').textContent = full;
+  }
 }
 
 /* Render tables */
@@ -562,12 +643,15 @@ function renderPendingTicketsForManager() {
   tbody.innerHTML = "";
   const myManagerId = currentUser.userId;
   
-  // Show tickets from groups this manager is in
+  // Show tickets routed to this manager by explicit assignment or matching department
+  const myDepts = (managers.find(m => m.id === myManagerId)?.assignedDepartments) || [];
   const pending = tickets.filter(t => 
-    t.status === "Pending Assignment" && 
-    t.assignedManagerIds && 
-    t.assignedManagerIds.includes(myManagerId) &&
-    !t.acceptedByManager
+    t.status === "Pending Assignment" &&
+    !t.acceptedByManager &&
+    (
+      (Array.isArray(t.assignedManagerIds) && t.assignedManagerIds.includes(myManagerId)) ||
+      (t.department && myDepts.includes(t.department))
+    )
   );
   
   pending.forEach(t => {
@@ -576,6 +660,10 @@ function renderPendingTicketsForManager() {
       .filter(e => e.managerId === myManagerId || !e.managerId)
       .map(e => `<option value="${e.id}">${e.name} (${e.phone || '-'})</option>`)
       .join("");
+    const salesManagerOptions = managers
+      .filter(m => (m.assignedDepartments || []).some(d => (d || '').toLowerCase() === 'sales'))
+      .map(m => `<option value="${m.id}">${m.name}</option>`)
+      .join('');
     tr.innerHTML = `
       <td>${t.id}</td>
       <td>${t.customerName}</td>
@@ -584,55 +672,308 @@ function renderPendingTicketsForManager() {
       <td>${t.description}</td>
       <td>${t.raisedDate}</td>
       <td>
-        <select data-assign-ticket="${t.id}">
-          <option value="">Select Employee</option>
-          ${employeeOptions}
-        </select>
+        <button class="btn small secondary" data-show-assign="${t.id}">Assign...</button>
+        <div data-assign-box="${t.id}" class="hidden" style="margin-top:6px; display:flex; flex-direction:column; gap:6px;">
+          <select data-assign-ticket="${t.id}">
+            <option value="">Select Employee</option>
+            ${employeeOptions}
+          </select>
+          <select data-site-visit="${t.id}">
+            <option value="">Site Visit?</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+          <select data-visit-by="${t.id}" class="hidden">
+            <option value="">Visit By</option>
+            <option value="manager">Manager</option>
+            <option value="self">Self (Manager)</option>
+            <option value="employee">Employee</option>
+          </select>
+          <input data-quotation-time="${t.id}" class="hidden" type="text" placeholder="Quotation / time needed (e.g., 2 days)" />
+          <input data-no-visit-desc="${t.id}" class="hidden" type="text" placeholder="Description (no site visit)" />
+          <input data-no-visit-photo="${t.id}" class="hidden" type="file" accept="image/*" />
+          <input data-manager-visit-desc="${t.id}" class="hidden" type="text" placeholder="Manager visit description" />
+          <input data-manager-visit-photo="${t.id}" class="hidden" type="file" accept="image/*" />
+          <select data-sales-manager="${t.id}" class="hidden">
+            <option value="">Select Sales Manager</option>
+            ${salesManagerOptions}
+          </select>
+        </div>
       </td>
       <td>
-        <button class="btn small primary" data-accept-btn="${t.id}" style="margin-bottom: 4px;">Accept</button><br/>
-        <button class="btn small secondary" data-decline-btn="${t.id}" style="margin-bottom: 4px;">Decline</button><br/>
-        <button class="btn small secondary" data-swap-btn="${t.id}">Swap</button>
+        <button class="btn small primary" data-accept-btn="${t.id}" style="margin-bottom: 4px;">Accept Task</button><br/>
+        <button class="btn small secondary" data-decline-btn="${t.id}" style="margin-bottom: 4px;">Decline Task</button>
       </td>
     `;
     tbody.appendChild(tr);
+  });
+
+  // Show assign controls
+  Array.from(tbody.querySelectorAll("button[data-show-assign]")).forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute("data-show-assign");
+      Array.from(tbody.querySelectorAll("div[data-assign-box]")).forEach(div => {
+        if (div.getAttribute("data-assign-box") !== id) div.classList.add("hidden");
+      });
+      const box = tbody.querySelector(`div[data-assign-box="${id}"]`);
+      if (box) box.classList.toggle("hidden");
+      const t = tickets.find(x => x.id === id);
+      const visitSel = tbody.querySelector(`select[data-site-visit="${id}"]`);
+      const visitBySelToggle = tbody.querySelector(`select[data-visit-by="${id}"]`);
+      const qtInput = tbody.querySelector(`input[data-quotation-time="${id}"]`);
+      const salesSel = tbody.querySelector(`select[data-sales-manager="${id}"]`);
+      const noDesc = tbody.querySelector(`input[data-no-visit-desc="${id}"]`);
+      const noPhoto = tbody.querySelector(`input[data-no-visit-photo="${id}"]`);
+      const mgrDesc = tbody.querySelector(`input[data-manager-visit-desc="${id}"]`);
+      const mgrPhoto = tbody.querySelector(`input[data-manager-visit-photo="${id}"]`);
+      if (visitSel && qtInput) {
+        const updateUI = () => {
+          const v = visitSel.value;
+          if (v === 'no') {
+            qtInput.classList.remove('hidden');
+            if (salesSel) salesSel.classList.remove('hidden');
+            if (visitBySelToggle) visitBySelToggle.classList.add('hidden');
+            if (noDesc) noDesc.classList.remove('hidden');
+            if (noPhoto) noPhoto.classList.remove('hidden');
+            if (mgrDesc) mgrDesc.classList.add('hidden');
+            if (mgrPhoto) mgrPhoto.classList.add('hidden');
+          } else if (v === 'yes') {
+            qtInput.classList.add('hidden');
+            qtInput.value = '';
+            if (visitBySelToggle) visitBySelToggle.classList.remove('hidden');
+            if (noDesc) { noDesc.classList.add('hidden'); noDesc.value = ''; }
+            if (noPhoto) { noPhoto.classList.add('hidden'); noPhoto.value = ''; }
+            const by = visitBySelToggle ? visitBySelToggle.value : '';
+            if (by === 'manager') {
+              if (salesSel) salesSel.classList.remove('hidden');
+              if (mgrDesc) mgrDesc.classList.remove('hidden');
+              if (mgrPhoto) mgrPhoto.classList.remove('hidden');
+            } else {
+              if (salesSel) salesSel.classList.add('hidden');
+              if (mgrDesc) mgrDesc.classList.add('hidden');
+              if (mgrPhoto) mgrPhoto.classList.add('hidden');
+            }
+          } else {
+            qtInput.classList.add('hidden');
+            if (salesSel) salesSel.classList.add('hidden');
+            if (visitBySelToggle) visitBySelToggle.classList.add('hidden');
+            if (noDesc) noDesc.classList.add('hidden');
+            if (noPhoto) noPhoto.classList.add('hidden');
+            if (mgrDesc) mgrDesc.classList.add('hidden');
+            if (mgrPhoto) mgrPhoto.classList.add('hidden');
+          }
+        };
+        visitSel.onchange = updateUI;
+        if (visitBySelToggle) visitBySelToggle.onchange = updateUI;
+        const postStage = !!(t && (t.salesApproved || t.managerSiteVisitDescription || t.noSiteVisitDescription || t.siteVisitStatus));
+        if (postStage) {
+          // After sales return or site visit done: do not ask site visit, show only employee select
+          visitSel.classList.add('hidden');
+          visitSel.value = '';
+          if (visitBySelToggle) { visitBySelToggle.classList.add('hidden'); visitBySelToggle.value = ''; }
+          if (qtInput) qtInput.classList.add('hidden');
+          if (salesSel) salesSel.classList.add('hidden');
+          if (noDesc) noDesc.classList.add('hidden');
+          if (noPhoto) noPhoto.classList.add('hidden');
+          if (mgrDesc) mgrDesc.classList.add('hidden');
+          if (mgrPhoto) mgrPhoto.classList.add('hidden');
+        } else {
+          // Pre-sales: show everything by default
+          visitSel.value = 'yes';
+          if (visitBySelToggle) visitBySelToggle.value = 'manager';
+          updateUI();
+        }
+      }
+    };
+  });
+
+  // Approve button
+  Array.from(tbody.querySelectorAll("button[data-approve-btn]")).forEach(btn => {
+    btn.onclick = () => {
+      btn.disabled = true;
+      const ticketId = btn.getAttribute("data-approve-btn");
+      const ticket = tickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+      ticket.departmentApproved = true;
+      ticket.departmentApprovedBy = currentUser.userId;
+      logAction('manager','department_approve', ticket.id);
+      if ($("mgrActionMsg")) $("mgrActionMsg").textContent = "Ticket approved by department manager.";
+      renderPendingTicketsForManager();
+      renderAdminAllTickets();
+      updateStats();
+    };
   });
 
   // Add event listeners
   Array.from(tbody.querySelectorAll("button[data-accept-btn]")).forEach(btn => {
     btn.onclick = () => {
       const ticketId = btn.getAttribute("data-accept-btn");
-      const select = tbody.querySelector(`select[data-assign-ticket="${ticketId}"]`);
-      const empId = select.value;
-      if (!empId) {
-        alert("Please select an employee first");
-        return;
-      }
       const ticket = tickets.find(t => t.id === ticketId);
+      const box = tbody.querySelector(`div[data-assign-box="${ticketId}"]`);
+      const alreadyVisited = !!(ticket && (ticket.siteVisitStatus || ticket.managerSiteVisitDescription || ticket.noSiteVisitDescription));
+      const isPostSalesApproval = !!(ticket && ticket.salesApproved);
+      if (box && box.classList.contains('hidden') && !alreadyVisited && !isPostSalesApproval) { openManagerVisitModal(ticketId); return; }
+      if (box && box.classList.contains('hidden')) { box.classList.remove('hidden'); }
+      const select = tbody.querySelector(`select[data-assign-ticket="${ticketId}"]`);
+      const visitSel = tbody.querySelector(`select[data-site-visit="${ticketId}"]`);
+      const visitBySel = tbody.querySelector(`select[data-visit-by="${ticketId}"]`);
+      const salesSelForTicket = tbody.querySelector(`select[data-sales-manager="${ticketId}"]`);
+      const empId = select ? select.value : '';
+      ticket.departmentApproved = true;
       ticket.acceptedByManager = currentUser.userId;
-      ticket.assignedEmployeeId = empId;
-      const empIdx = employees.findIndex(e => e.id === empId);
-      if (empIdx >= 0 && !employees[empIdx].managerId) {
-        employees[empIdx].managerId = currentUser.userId;
+      const treatAsPostSales = isPostSalesApproval || alreadyVisited;
+      if (!treatAsPostSales) {
+        if (!visitSel || !visitSel.value) {
+          if ($("mgrActionErr")) $("mgrActionErr").textContent = "Please select Site Visit option.";
+          return;
+        }
+        const siteVisit = visitSel.value === 'yes';
+      const selectedSalesMgr = salesSelForTicket ? salesSelForTicket.value : '';
+        if (siteVisit) {
+          if (!visitBySel || !visitBySel.value) {
+            if ($("mgrActionErr")) $("mgrActionErr").textContent = "Select who will visit (Manager/Employee).";
+            return;
+          }
+          if (visitBySel.value === 'manager' || visitBySel.value === 'self') {
+            const mgrDescEl = tbody.querySelector(`input[data-manager-visit-desc="${ticketId}"]`);
+            const mgrPhotoEl = tbody.querySelector(`input[data-manager-visit-photo="${ticketId}"]`);
+            const desc = mgrDescEl ? mgrDescEl.value.trim() : '';
+            const file = mgrPhotoEl && mgrPhotoEl.files && mgrPhotoEl.files[0];
+            if (!selectedSalesMgr) { if ($("mgrActionErr")) $("mgrActionErr").textContent = "Select a Sales Manager."; if (salesSelForTicket) salesSelForTicket.focus(); return; }
+            if (!desc) { if ($("mgrActionErr")) $("mgrActionErr").textContent = "Enter manager visit description."; if (mgrDescEl) mgrDescEl.focus(); return; }
+          const finalize = (photoName, photoData) => {
+            ticket.acceptedByManager = currentUser.userId;
+            ticket.siteVisitRequired = true;
+            ticket.visitBy = 'Manager';
+            ticket.managerSiteVisitDescription = desc;
+            ticket.managerSiteVisitPhotoName = photoName || '';
+            ticket.managerSiteVisitPhotoData = photoData || '';
+            ticket.routeToSales = true;
+            ticket.salesRequestedByManagerId = currentUser.userId;
+            ticket.salesManagerId = selectedSalesMgr;
+            ticket.assignedManagerIds = [selectedSalesMgr];
+            ticket.status = "Pending Sales Approval";
+            btn.disabled = true;
+            const assignBox = tbody.querySelector(`div[data-assign-box="${ticketId}"]`);
+            if (assignBox) assignBox.classList.add('hidden');
+            logAction('manager','self_site_visit_and_route_sales', ticket.id);
+            renderPendingTicketsForManager();
+            renderSalesApprovalsForManager();
+            renderAdminAllTickets();
+            updateStats();
+            if ($("mgrActionMsg")) $("mgrActionMsg").textContent = "Manager visit recorded and sent to Sales manager.";
+          };
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = () => finalize(file.name, reader.result);
+              reader.readAsDataURL(file);
+            } else {
+              finalize('', '');
+            }
+            return;
+          }
+          if (!empId) {
+            const box = tbody.querySelector(`div[data-assign-box="${ticketId}"]`);
+            if (box) box.classList.remove("hidden");
+            if (select) select.focus();
+            if ($("mgrActionErr")) $("mgrActionErr").textContent = "Please select an employee for site visit";
+            return;
+          }
+          ticket.acceptedByManager = currentUser.userId;
+          ticket.assignedEmployeeId = empId;
+          ticket.siteVisitRequired = true;
+          // Sales manager will be selected later after employee report
+          const empIdx = employees.findIndex(e => e.id === empId);
+          if (empIdx >= 0 && !employees[empIdx].managerId) {
+            employees[empIdx].managerId = currentUser.userId;
+          }
+          ticket.status = "Assigned";
+          btn.disabled = true;
+          const assignBox = tbody.querySelector(`div[data-assign-box="${ticketId}"]`);
+          if (assignBox) assignBox.classList.add('hidden');
+          logAction('manager','assign_site_visit', ticket.id, `emp:${empId}`);
+          renderPendingTicketsForManager();
+          renderAssignedTicketsForManager();
+          renderAdminAllTickets();
+          renderEmployeeTicketsIfEmployeeLoggedIn();
+          updateStats();
+          if ($("mgrActionMsg")) $("mgrActionMsg").textContent = "Site visit assigned to employee.";
+        } else {
+          if (!selectedSalesMgr) { if ($("mgrActionErr")) $("mgrActionErr").textContent = "Select a Sales Manager."; if (salesSelForTicket) salesSelForTicket.focus(); return; }
+          const qtInput = tbody.querySelector(`input[data-quotation-time="${ticketId}"]`);
+          const qtVal = qtInput ? qtInput.value.trim() : '';
+          const noDescEl = tbody.querySelector(`input[data-no-visit-desc="${ticketId}"]`);
+          const noPhotoEl = tbody.querySelector(`input[data-no-visit-photo="${ticketId}"]`);
+          const desc = noDescEl ? noDescEl.value.trim() : '';
+          const file = noPhotoEl && noPhotoEl.files && noPhotoEl.files[0];
+          if (!desc) { if ($("mgrActionErr")) $("mgrActionErr").textContent = "Enter description for no site visit."; if (noDescEl) noDescEl.focus(); return; }
+          const finalizeNoVisit = (photoName, photoData) => {
+            ticket.routeToSales = true;
+            ticket.status = "Pending Sales Approval";
+            ticket.siteVisitRequired = false;
+            ticket.salesRequestedByManagerId = currentUser.userId;
+            ticket.quotationTime = qtVal;
+            ticket.noSiteVisitDescription = desc;
+            ticket.noSiteVisitPhotoName = photoName || '';
+            ticket.noSiteVisitPhotoData = photoData || '';
+            ticket.salesManagerId = selectedSalesMgr;
+            ticket.assignedManagerIds = [selectedSalesMgr];
+            btn.disabled = true;
+            const assignBox = tbody.querySelector(`div[data-assign-box="${ticketId}"]`);
+            if (assignBox) assignBox.classList.add('hidden');
+            logAction('manager','route_to_sales_no_visit', ticket.id, ticket.quotationTime || '');
+            renderPendingTicketsForManager();
+            renderSalesApprovalsForManager();
+            renderAdminAllTickets();
+            updateStats();
+            if ($("mgrActionMsg")) $("mgrActionMsg").textContent = "Sent to Sales with description and image.";
+          };
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = () => finalizeNoVisit(file.name, reader.result);
+            reader.readAsDataURL(file);
+          } else {
+            finalizeNoVisit('', '');
+          }
+        }
+      } else {
+        if (!empId) {
+          const box = tbody.querySelector(`div[data-assign-box="${ticketId}"]`);
+          if (box) box.classList.remove("hidden");
+          if (select) select.focus();
+          if ($("mgrActionErr")) $("mgrActionErr").textContent = "Please select an employee first";
+          return;
+        }
+        ticket.acceptedByManager = currentUser.userId;
+        ticket.assignedEmployeeId = empId;
+        ticket.siteVisitRequired = false;
+        const empIdx = employees.findIndex(e => e.id === empId);
+        if (empIdx >= 0 && !employees[empIdx].managerId) {
+          employees[empIdx].managerId = currentUser.userId;
+        }
+        ticket.status = "Assigned";
+        btn.disabled = true;
+        const assignBox = tbody.querySelector(`div[data-assign-box="${ticketId}"]`);
+        if (assignBox) assignBox.classList.add('hidden');
+        logAction('manager','assign_after_sales_or_visit', ticket.id, `emp:${empId}`);
+        renderPendingTicketsForManager();
+        renderAssignedTicketsForManager();
+        renderAdminAllTickets();
+        renderEmployeeTicketsIfEmployeeLoggedIn();
+        updateStats();
+        if ($("mgrActionMsg")) $("mgrActionMsg").textContent = "Ticket assigned to employee.";
       }
-      ticket.status = "Assigned";
-      logAction('manager','accept_and_assign', ticket.id, `emp:${empId}`);
-      renderPendingTicketsForManager();
-      renderAssignedTicketsForManager();
-      renderAdminAllTickets();
-      renderEmployeeTicketsIfEmployeeLoggedIn();
-      updateStats();
-      alert("Ticket accepted and assigned to employee!");
     };
   });
 
   Array.from(tbody.querySelectorAll("button[data-decline-btn]")).forEach(btn => {
     btn.onclick = () => {
+      btn.disabled = true;
       const ticketId = btn.getAttribute("data-decline-btn");
       const ticket = tickets.find(t => t.id === ticketId);
       // Keep ticket pending for other managers in the group
       logAction('manager','decline_ticket', ticket.id);
-      alert("You have declined this ticket. Other managers in the group will see it.");
+      if ($("mgrActionMsg")) $("mgrActionMsg").textContent = "Declined. Other managers in the group will see it.";
       renderPendingTicketsForManager();
     };
   });
@@ -640,29 +981,253 @@ function renderPendingTicketsForManager() {
   Array.from(tbody.querySelectorAll("button[data-swap-btn]")).forEach(btn => {
     btn.onclick = () => {
       const ticketId = btn.getAttribute("data-swap-btn");
-      const ticket = tickets.find(t => t.id === ticketId);
-      const callTypesUnique = [...new Set(callGroups.map(g => g.callType))];
-      const ctChoices = callTypesUnique.map(ct => ct).join("\n");
-      const newCt = prompt("Enter new Call Type:\n" + ctChoices, ticket.callType || "");
-      if (!newCt) return;
-      const groupsForCt = callGroups.filter(g => g.callType === newCt);
-      const grpChoices = groupsForCt.map(g => `${g.id}:${g.name}`).join("\n");
-      const newGrp = prompt("Enter Group ID for selected Call Type:\n" + grpChoices, ticket.callGroup || "");
-      if (!newGrp) return;
-      ticket.callType = newCt;
-      ticket.callGroup = newGrp;
-      ticket.acceptedByManager = null;
-      ticket.assignedEmployeeId = null;
-      ticket.status = "Pending Assignment";
-      const mgrIds = managers.filter(m => (m.assignedGroups || []).includes(newGrp)).map(m => m.id);
-      ticket.assignedManagerIds = mgrIds;
-      logAction('manager','swap_department', ticket.id, `${newCt}/${newGrp}`);
+      Array.from(tbody.querySelectorAll("div[data-swap-box]")).forEach(div => {
+        if (div.getAttribute("data-swap-box") !== ticketId) div.classList.add("hidden");
+      });
+      const box = tbody.querySelector(`div[data-swap-box="${ticketId}"]`);
+      if (box) box.classList.toggle("hidden");
+      const ctSel = tbody.querySelector(`select[data-swap-calltype="${ticketId}"]`);
+      const grpSel = tbody.querySelector(`select[data-swap-group="${ticketId}"]`);
+      const populateGroups = () => {
+        const ctVal = ctSel.value;
+        const groupsForCt = callGroups.filter(g => g.callType === ctVal);
+        grpSel.innerHTML = groupsForCt.map(g => `<option value="${g.id}">${g.name}</option>`).join("");
+      };
+      if (ctSel && grpSel) {
+        ctSel.onchange = populateGroups;
+        populateGroups();
+      }
+      const applyBtn = tbody.querySelector(`button[data-apply-swap="${ticketId}"]`);
+      if (applyBtn) {
+        applyBtn.onclick = () => {
+          const ticket = tickets.find(t => t.id === ticketId);
+          const newCt = ctSel.value;
+          const newGrp = grpSel.value;
+          ticket.callType = newCt;
+          ticket.callGroup = newGrp;
+          ticket.acceptedByManager = null;
+          ticket.assignedEmployeeId = null;
+          ticket.status = "Pending Assignment";
+          const mgrIds = managers.filter(m => (m.assignedGroups || []).includes(newGrp)).map(m => m.id);
+          ticket.assignedManagerIds = mgrIds;
+          logAction('manager','swap_department', ticket.id, `${newCt}/${newGrp}`);
+          renderPendingTicketsForManager();
+          renderAssignedTicketsForManager();
+          renderAdminAllTickets();
+          updateStats();
+        };
+      }
+    };
+  });
+}
+
+function openManagerVisitModal(ticketId) {
+  const ticket = tickets.find(t => t.id === ticketId);
+  if (!ticket) return;
+  ticket.departmentApproved = true;
+  ticket.acceptedByManager = currentUser.userId;
+  let modal = document.getElementById('managerVisitModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'managerVisitModal';
+    modal.className = 'modal';
+    const inner = document.createElement('div');
+    inner.id = 'managerVisitContent';
+    inner.style.padding = '20px';
+    inner.style.background = 'rgba(25,25,25,0.95)';
+    inner.style.borderRadius = '12px';
+    inner.style.maxWidth = '520px';
+    inner.style.margin = '60px auto';
+    inner.style.boxShadow = '0 10px 30px rgba(0,0,0,0.35)';
+    inner.innerHTML = `
+      <h3 style="color:#e84c3d; margin:0 0 12px 0;">Manager Action</h3>
+      <div style="color:rgba(255,255,255,0.85); margin-bottom:10px;">${ticket.id} • ${ticket.customerName}</div>
+      <div style="display:grid; gap:10px;">
+        <label style="color:rgba(255,255,255,0.75);">Site Visit?</label>
+        <div>
+          <select id="mvSiteVisit" style="width:100%">
+            <option value="">Select</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+        <div id="mvVisitByWrap" class="hidden">
+          <label style="color:rgba(255,255,255,0.75);">Who will visit?</label>
+          <select id="mvVisitBy" style="width:100%">
+            <option value="">Select</option>
+            <option value="self">Self (Manager)</option>
+            <option value="employee">Employee</option>
+          </select>
+        </div>
+        <div id="mvMgrFields" class="hidden">
+          <input id="mvMgrDesc" type="text" placeholder="Manager visit description" style="width:100%" />
+          <input id="mvMgrPhoto" type="file" accept="image/*" />
+          <select id="mvSalesMgr" style="width:100%"><option value="">Select Sales Manager</option></select>
+        </div>
+        <div id="mvEmpFields" class="hidden">
+          <select id="mvEmpSelect" style="width:100%"><option value="">Select Employee</option></select>
+          <select id="mvSalesMgrEmp" style="width:100%"><option value="">Select Sales Manager (optional)</option></select>
+        </div>
+        <div id="mvNoVisitFields" class="hidden">
+          <input id="mvNoDesc" type="text" placeholder="Description (no site visit)" style="width:100%" />
+          <input id="mvNoPhoto" type="file" accept="image/*" />
+          <input id="mvQt" type="text" placeholder="Quotation / time needed (e.g., 2 days)" style="width:100%" />
+          <select id="mvSalesMgrNo" style="width:100%"><option value="">Select Sales Manager</option></select>
+        </div>
+        <div id="managerVisitErr" style="color:#ff6666; min-height:18px;"></div>
+        <div id="managerVisitMsg" style="color:#66cc66; min-height:18px;"></div>
+        <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px;">
+          <button class="btn small secondary" id="mvCancel">Cancel</button>
+          <button class="btn small primary" id="mvConfirm">Confirm</button>
+        </div>
+      </div>
+    `;
+    modal.appendChild(inner);
+    document.body.appendChild(modal);
+  }
+  const salesMgrs = managers.filter(m => (m.assignedDepartments || []).some(d => (d || '').toLowerCase() === 'sales'));
+  const salesOpts = salesMgrs.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+  const mvSalesMgr = document.getElementById('mvSalesMgr');
+  const mvSalesMgrNo = document.getElementById('mvSalesMgrNo');
+  if (mvSalesMgr) mvSalesMgr.innerHTML = `<option value="">Select Sales Manager</option>` + salesOpts;
+  if (mvSalesMgrNo) mvSalesMgrNo.innerHTML = `<option value="">Select Sales Manager</option>` + salesOpts;
+  const myManagerId = currentUser.userId;
+  const candidates = employees.filter(e => e.managerId === myManagerId || !e.managerId);
+  const mvEmpSelect = document.getElementById('mvEmpSelect');
+  if (mvEmpSelect) mvEmpSelect.innerHTML = `<option value="">Select Employee</option>` + candidates.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
+  const mvSalesMgrEmp = document.getElementById('mvSalesMgrEmp');
+  if (mvSalesMgrEmp) mvSalesMgrEmp.innerHTML = `<option value="">Select Sales Manager (optional)</option>` + salesOpts;
+  const mvSiteVisit = document.getElementById('mvSiteVisit');
+  const mvVisitByWrap = document.getElementById('mvVisitByWrap');
+  const mvVisitBy = document.getElementById('mvVisitBy');
+  const mvMgrFields = document.getElementById('mvMgrFields');
+  const mvEmpFields = document.getElementById('mvEmpFields');
+  const mvNoVisitFields = document.getElementById('mvNoVisitFields');
+  const err = document.getElementById('managerVisitErr');
+  const msg = document.getElementById('managerVisitMsg');
+  err.textContent = '';
+  msg.textContent = '';
+  const toggle = () => {
+    const v = mvSiteVisit ? mvSiteVisit.value : '';
+    mvVisitByWrap.classList.toggle('hidden', v !== 'yes');
+    mvMgrFields.classList.add('hidden');
+    mvEmpFields.classList.add('hidden');
+    mvNoVisitFields.classList.add('hidden');
+    if (v === 'no') mvNoVisitFields.classList.remove('hidden');
+    if (v === 'yes') {
+      const by = mvVisitBy ? mvVisitBy.value : '';
+      if (by === 'self') mvMgrFields.classList.remove('hidden');
+      if (by === 'employee') mvEmpFields.classList.remove('hidden');
+    }
+  };
+  if (mvSiteVisit) mvSiteVisit.onchange = toggle;
+  if (mvVisitBy) mvVisitBy.onchange = toggle;
+  toggle();
+  modal.classList.remove('hidden');
+  const cancel = document.getElementById('mvCancel');
+  const confirm = document.getElementById('mvConfirm');
+  if (cancel) cancel.onclick = () => { modal.classList.add('hidden'); };
+  if (confirm) confirm.onclick = () => {
+    err.textContent = '';
+    msg.textContent = '';
+    const v = mvSiteVisit ? mvSiteVisit.value : '';
+    if (!v) { err.textContent = 'Select Site Visit option.'; return; }
+    if (v === 'no') {
+      const qtVal = document.getElementById('mvQt').value.trim();
+      const desc = document.getElementById('mvNoDesc').value.trim();
+      const fileInput = document.getElementById('mvNoPhoto');
+      const file = fileInput && fileInput.files && fileInput.files[0];
+      const salesSel = document.getElementById('mvSalesMgrNo');
+      const selectedSalesMgr = salesSel ? salesSel.value : '';
+      if (!selectedSalesMgr) { err.textContent = 'Select a Sales Manager.'; return; }
+      if (!desc) { err.textContent = 'Enter description for no site visit.'; return; }
+      const finalize = (photoName, photoData) => {
+        ticket.routeToSales = true;
+        ticket.status = 'Pending Sales Approval';
+        ticket.siteVisitRequired = false;
+        ticket.salesRequestedByManagerId = currentUser.userId;
+        ticket.quotationTime = qtVal;
+        ticket.noSiteVisitDescription = desc;
+        ticket.noSiteVisitPhotoName = photoName || '';
+        ticket.noSiteVisitPhotoData = photoData || '';
+        ticket.salesManagerId = selectedSalesMgr;
+        ticket.assignedManagerIds = [selectedSalesMgr];
+        logAction('manager','route_to_sales_no_visit', ticket.id, ticket.quotationTime || '');
+        renderPendingTicketsForManager();
+        renderSalesApprovalsForManager();
+        renderAdminAllTickets();
+        updateStats();
+        msg.textContent = 'Sent to Sales with description and image.';
+        modal.classList.add('hidden');
+      };
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => finalize(file.name, reader.result);
+        reader.readAsDataURL(file);
+      } else {
+        finalize('', '');
+      }
+      return;
+    }
+    const by = mvVisitBy ? mvVisitBy.value : '';
+    if (!by) { err.textContent = 'Select who will visit.'; return; }
+    if (by === 'self') {
+      const desc = document.getElementById('mvMgrDesc').value.trim();
+      const photoInput = document.getElementById('mvMgrPhoto');
+      const file = photoInput && photoInput.files && photoInput.files[0];
+      const salesSel = document.getElementById('mvSalesMgr');
+      const selectedSalesMgr = salesSel ? salesSel.value : '';
+      if (!selectedSalesMgr) { err.textContent = 'Select a Sales Manager.'; return; }
+      if (!desc) { err.textContent = 'Enter manager visit description.'; return; }
+      const finalize = (photoName, photoData) => {
+        ticket.siteVisitRequired = true;
+        ticket.visitBy = 'Manager';
+        ticket.managerSiteVisitDescription = desc;
+        ticket.managerSiteVisitPhotoName = photoName || '';
+        ticket.managerSiteVisitPhotoData = photoData || '';
+        ticket.routeToSales = true;
+        ticket.salesRequestedByManagerId = currentUser.userId;
+        ticket.salesManagerId = selectedSalesMgr;
+        ticket.assignedManagerIds = [selectedSalesMgr];
+        ticket.status = 'Pending Sales Approval';
+        logAction('manager','self_site_visit_and_route_sales', ticket.id);
+        renderPendingTicketsForManager();
+        renderSalesApprovalsForManager();
+        renderAdminAllTickets();
+        updateStats();
+        msg.textContent = 'Manager visit recorded and sent to Sales manager.';
+        modal.classList.add('hidden');
+      };
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => finalize(file.name, reader.result);
+        reader.readAsDataURL(file);
+      } else {
+        finalize('', '');
+      }
+      return;
+    }
+    if (by === 'employee') {
+      const empId = mvEmpSelect ? mvEmpSelect.value : '';
+      if (!empId) { err.textContent = 'Select an employee for site visit.'; return; }
+      const selectedSalesMgrEmp = mvSalesMgrEmp ? mvSalesMgrEmp.value : '';
+      ticket.assignedEmployeeId = empId;
+      ticket.siteVisitRequired = true;
+      ticket.preselectedSalesManagerId = selectedSalesMgrEmp || '';
+      const empIdx = employees.findIndex(e => e.id === empId);
+      if (empIdx >= 0 && !employees[empIdx].managerId) employees[empIdx].managerId = myManagerId;
+      ticket.status = 'Assigned';
+      logAction('manager','assign_site_visit', ticket.id, `emp:${empId}`);
       renderPendingTicketsForManager();
       renderAssignedTicketsForManager();
       renderAdminAllTickets();
+      renderEmployeeTicketsIfEmployeeLoggedIn();
       updateStats();
-    };
-  });
+      msg.textContent = selectedSalesMgrEmp ? 'Site visit assigned. Sales manager preselected.' : 'Site visit assigned to employee.';
+      modal.classList.add('hidden');
+      return;
+    }
+  };
 }
 
 /* Admin Master Control Center Functions */
@@ -839,7 +1404,7 @@ function updateAdminStats() {
   $("statTotalTickets").textContent = tickets.length;
   $("statPendingTickets").textContent = tickets.filter(t => t.status !== "Finished" && t.status !== "Reported").length;
   $("statCompletedTickets").textContent = tickets.filter(t => t.status === "Finished" || t.status === "Reported").length;
-  $("statTotalGroups").textContent = callGroups.length;
+  $("statTotalGroups").textContent = departmentsList.length;
 }
 
 // EMPLOYEES MANAGEMENT
@@ -1001,10 +1566,7 @@ function renderAdminManagers() {
   const perms = getCurrentAdminPerms();
 
   managers.forEach(m => {
-    const groupNames = (m.assignedGroups || []).map(gid => {
-      const g = callGroups.find(x => x.id === gid);
-      return g ? g.name : gid;
-    }).join(", ") || "No groups";
+    const deptNames = (m.assignedDepartments || []).join(", ") || "No departments";
 
     const pendingTickets = tickets.filter(t => 
       t.assignedManagerIds && t.assignedManagerIds.includes(m.id) && t.status === "Pending Assignment"
@@ -1016,7 +1578,7 @@ function renderAdminManagers() {
       <td>${m.name}</td>
       <td>${m.email}</td>
       <td>${m.phone || '-'}</td>
-      <td><span style="background: rgba(135,206,235,0.2); padding: 4px 8px; border-radius: 4px;">${groupNames}</span></td>
+      <td><span style="background: rgba(135,206,235,0.2); padding: 4px 8px; border-radius: 4px;">${deptNames}</span></td>
       <td><span style="background: rgba(255,107,107,0.2); padding: 4px 8px; border-radius: 4px;">${pendingTickets}</span></td>
       <td>
         ${perms.canEdit ? `<button class="btn small primary" data-edit-mgr="${m.id}">Edit</button>` : ''}
@@ -1054,9 +1616,8 @@ function renderAdminManagers() {
       if (typeof mgrPhone !== 'undefined') mgrPhone.value = mgr.phone || '';
       mgrPassword.value = mgr.password || '';
       populateManagerCallGroupsDropdown();
-      // preselect groups
       Array.from(mgrCallGroupDropdown.options).forEach(opt => {
-        opt.selected = (mgr.assignedGroups || []).includes(opt.value);
+        opt.selected = (mgr.assignedDepartments || []).includes(opt.value);
       });
       mgrAddMsg.textContent = '';
       mgrAddErr.textContent = '';
@@ -1083,6 +1644,11 @@ function renderAdminAdmins() {
       <td>
         <button class="btn small primary" data-edit-admin="${a.id}">Edit</button>
         <button class="btn small secondary" data-delete-admin="${a.id}">Delete</button>
+        <div data-confirm-delete="${a.id}" class="hidden" style="margin-top:6px; display:flex; gap:6px; align-items:center;">
+          <span>Confirm delete?</span>
+          <button class="btn small primary" data-confirm-delete-yes="${a.id}">Yes</button>
+          <button class="btn small secondary" data-confirm-delete-no="${a.id}">No</button>
+        </div>
       </td>
     `;
     tbody.appendChild(tr);
@@ -1094,15 +1660,36 @@ function renderAdminAdmins() {
       const admin = admins.find(x => x.id === id);
       if (!admin) return;
       if (currentUser && currentUser.role === 'admin' && (admin.username === currentUser.username)) {
-        alert("You cannot delete the currently logged-in admin.");
+        const el = $("adminActionErr") || $("adminAddErr") || $("empAddErr") || $("groupAddErr");
+        if (el) el.textContent = "Cannot delete the currently logged-in admin.";
         return;
       }
-      if (!confirm("Delete this admin?")) return;
+      Array.from(tbody.querySelectorAll("div[data-confirm-delete]")).forEach(div => {
+        if (div.getAttribute("data-confirm-delete") !== id) div.classList.add("hidden");
+      });
+      const box = tbody.querySelector(`div[data-confirm-delete="${id}"]`);
+      if (box) box.classList.toggle("hidden");
+    };
+  });
+
+  Array.from(tbody.querySelectorAll("button[data-confirm-delete-yes]")).forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute("data-confirm-delete-yes");
       const index = admins.findIndex(x => x.id === id);
       if (index >= 0) {
         admins.splice(index, 1);
         renderAdminAdmins();
+        const msg = $("adminActionMsg");
+        if (msg) msg.textContent = "Admin deleted.";
       }
+    };
+  });
+
+  Array.from(tbody.querySelectorAll("button[data-confirm-delete-no]")).forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute("data-confirm-delete-no");
+      const box = tbody.querySelector(`div[data-confirm-delete="${id}"]`);
+      if (box) box.classList.add("hidden");
     };
   });
 
@@ -1309,7 +1896,7 @@ function setupManagerForm() {
       const menu = $("mgrGroupsMenu");
       const toggle = $("mgrGroupsToggle");
       if (menu) menu.classList.add('hidden');
-      if (toggle) toggle.textContent = '-- Select Groups --';
+      if (toggle) toggle.textContent = '-- Select Departments --';
       mgrAddMsg.textContent = '';
       mgrAddErr.textContent = '';
       populateManagerCallGroupsDropdown(); // Populate dropdown when form opens
@@ -1329,9 +1916,8 @@ function setupManagerForm() {
       const phone = (typeof mgrPhone !== 'undefined' && mgrPhone.value) ? mgrPhone.value.trim() : '';
       const password = mgrPassword.value;
       
-      // Get selected groups from dropdown (allows multiple select)
       const selectedOptions = Array.from(mgrCallGroupDropdown.selectedOptions);
-      const selectedGroups = selectedOptions.map(opt => opt.value);
+      const selectedDepartments = selectedOptions.map(opt => opt.value);
 
       mgrAddErr.textContent = '';
       mgrAddMsg.textContent = '';
@@ -1341,8 +1927,8 @@ function setupManagerForm() {
         return;
       }
 
-      if (selectedGroups.length === 0) {
-        mgrAddErr.textContent = 'Please select at least one call group';
+      if (selectedDepartments.length === 0) {
+        mgrAddErr.textContent = 'Please select at least one department';
         return;
       }
 
@@ -1354,11 +1940,11 @@ function setupManagerForm() {
           managers[idx].email = email;
           managers[idx].phone = phone;
           managers[idx].password = password;
-          managers[idx].assignedGroups = selectedGroups;
+          managers[idx].assignedDepartments = selectedDepartments;
 
           // Reflect selection in custom UI button
           const toggle = $("mgrGroupsToggle");
-          if (toggle) toggle.textContent = selectedGroups.length ? `${selectedGroups.length} group(s) selected` : '-- Select Groups --';
+          if (toggle) toggle.textContent = selectedDepartments.length ? `${selectedDepartments.length} department(s) selected` : '-- Select Departments --';
           mgrAddMsg.textContent = `Manager ${name} updated successfully!`;
           setTimeout(() => {
             form.classList.add('hidden');
@@ -1379,10 +1965,10 @@ function setupManagerForm() {
         password: password,
         role: 'manager',
         username: 'mgr_' + name.toLowerCase().replace(' ', '_').substring(0, 10),
-        assignedGroups: selectedGroups
+        assignedDepartments: selectedDepartments
       });
       const toggle = $("mgrGroupsToggle");
-      if (toggle) toggle.textContent = selectedGroups.length ? `${selectedGroups.length} group(s) selected` : '-- Select Groups --';
+      if (toggle) toggle.textContent = selectedDepartments.length ? `${selectedDepartments.length} department(s) selected` : '-- Select Departments --';
       mgrAddMsg.textContent = `Manager ${name} added successfully!`;
       setTimeout(() => {
         form.classList.add('hidden');
@@ -1421,20 +2007,20 @@ function populateManagerCallGroupsDropdown() {
   const menu = $("mgrGroupsMenu");
 
   if (select) {
-    select.innerHTML = '<option value="">-- Select Groups --</option>';
+    select.innerHTML = '<option value="">-- Select Departments --</option>';
   }
   if (optionsContainer) optionsContainer.innerHTML = '';
 
-  callGroups.forEach(g => {
+  departmentsList.forEach(d => {
     if (select) {
       const option = document.createElement('option');
-      option.value = g.id;
-      option.textContent = `${g.name} (${g.callType})`;
+      option.value = d;
+      option.textContent = d;
       select.appendChild(option);
     }
     if (optionsContainer) {
       const label = document.createElement('label');
-      label.innerHTML = `<input type="checkbox" value="${g.id}"> <span>${g.name} (${g.callType})</span>`;
+      label.innerHTML = `<input type="checkbox" value="${d}"> <span>${d}</span>`;
       optionsContainer.appendChild(label);
     }
   });
@@ -1453,7 +2039,7 @@ function populateManagerCallGroupsDropdown() {
         opt.selected = checked.includes(opt.value);
       });
       // Update button label
-      $("mgrGroupsToggle").textContent = checked.length ? `${checked.length} group(s) selected` : '-- Select Groups --';
+      $("mgrGroupsToggle").textContent = checked.length ? `${checked.length} department(s) selected` : '-- Select Departments --';
       if (menu) menu.classList.add('hidden');
     };
   }
@@ -1910,7 +2496,7 @@ function renderAdminReports() {
     divider.style.cssText = 'padding:8px 0; font-weight:700; color:#e84c3d;';
     divider.textContent = 'Action Logs';
     statusList2.appendChild(divider);
-    systemLogs.slice(-10).forEach(log => {
+    systemLogs.forEach(log => {
       const li = document.createElement('li');
       li.style.cssText = 'padding:6px 0; font-size:12px; color:rgba(255,255,255,0.85);';
       li.textContent = `${log.ts} - ${log.actor} ${log.action} (${log.ticketId}) ${log.details||''}`;
@@ -1938,6 +2524,310 @@ function refreshAllDataViews() {
   }
 }
 
+// Attendance tracking
+let attendanceLogs = [];
+function loadAttendanceLogs() {
+  try {
+    const raw = localStorage.getItem('attendanceLogs');
+    attendanceLogs = raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    attendanceLogs = [];
+  }
+}
+function saveAttendanceLogs() {
+  try {
+    localStorage.setItem('attendanceLogs', JSON.stringify(attendanceLogs));
+  } catch (e) {}
+}
+function addAttendanceLog(employeeId, type, dateObj = new Date()) {
+  const dayKey = dateObj.toISOString().split('T')[0];
+  let entry = attendanceLogs.find(a => a.employeeId === employeeId && a.date === dayKey);
+  if (!entry) {
+    entry = { id: 'ATT' + (attendanceLogs.length + 1).toString().padStart(4, '0'), employeeId, date: dayKey, loginTime: null, logoutTime: null };
+    attendanceLogs.push(entry);
+  }
+  const iso = dateObj.toISOString();
+  if (type === 'login') entry.loginTime = iso;
+  if (type === 'logout') entry.logoutTime = iso;
+  saveAttendanceLogs();
+  logAction('employee', type === 'login' ? 'attendance_login' : 'attendance_logout', '', employeeId);
+  renderEmployeeAttendanceToday();
+  renderAdminAttendance();
+}
+function renderEmployeeAttendanceToday() {
+  const list = $('empAttendanceTodayList');
+  if (!list || !currentUser || currentUser.role !== 'employee') return;
+  const eid = currentUser.employeeId;
+  const dayKey = new Date().toISOString().split('T')[0];
+  const entry = attendanceLogs.find(a => a.employeeId === eid && a.date === dayKey);
+  list.innerHTML = '';
+  const li = document.createElement('li');
+  const loginDisp = entry && entry.loginTime ? formatDateTime(new Date(entry.loginTime)) : '--';
+  const logoutDisp = entry && entry.logoutTime ? formatDateTime(new Date(entry.logoutTime)) : '--';
+  li.textContent = `Login: ${loginDisp} | Logout: ${logoutDisp}`;
+  list.appendChild(li);
+}
+function setupEmployeeAttendance() {
+  const loginBtn = $('empLoginBtn');
+  const logoutBtn = $('empLogoutBtn');
+  const msg = $('empAttendanceMsg');
+  const err = $('empAttendanceErr');
+  if (loginBtn) loginBtn.onclick = () => {
+    err.textContent = '';
+    msg.textContent = '';
+    if (!currentUser || currentUser.role !== 'employee') { err.textContent = 'Not an employee session.'; return; }
+    addAttendanceLog(currentUser.employeeId, 'login');
+    msg.textContent = 'Login recorded';
+  };
+  if (logoutBtn) logoutBtn.onclick = () => {
+    err.textContent = '';
+    msg.textContent = '';
+    if (!currentUser || currentUser.role !== 'employee') { err.textContent = 'Not an employee session.'; return; }
+    addAttendanceLog(currentUser.employeeId, 'logout');
+    msg.textContent = 'Logout recorded';
+  };
+  renderEmployeeAttendanceToday();
+}
+function renderAdminAttendance() {
+  const tbody = $('adminAttendanceTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const rows = attendanceLogs.slice().sort((a,b) => (a.date < b.date ? 1 : -1));
+  rows.forEach(rec => {
+    const emp = employees.find(e => e.id === rec.employeeId) || managers.find(m => m.id === rec.employeeId) || frontOfficeUsers.find(u => u.id === rec.employeeId) || helpDeskUsers.find(h => h.id === rec.employeeId) || financeUsers.find(f => f.id === rec.employeeId);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${rec.date}</td>
+      <td>${emp ? emp.name : rec.employeeId}</td>
+      <td>${rec.loginTime ? formatDateTime(new Date(rec.loginTime)) : '--'}</td>
+      <td>${rec.logoutTime ? formatDateTime(new Date(rec.logoutTime)) : '--'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function setupAdminAttendancePanel() {
+  const empSel = $('adminAttEmpSelect');
+  const dateInput = $('adminAttDate');
+  const loginInput = $('adminAttLoginTime');
+  const logoutInput = $('adminAttLogoutTime');
+  const saveBtn = $('adminAttSaveBtn');
+  const refreshBtn = $('adminAttRefreshBtn');
+  const msg = $('adminAttendanceMsg');
+  const err = $('adminAttendanceErr');
+  if (empSel) {
+    const opts = employees.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
+    empSel.innerHTML = `<option value="">-- Select Employee --</option>` + opts;
+  }
+  if (refreshBtn) refreshBtn.onclick = () => { renderAdminAttendance(); };
+  if (saveBtn) saveBtn.onclick = () => {
+    err.textContent = '';
+    msg.textContent = '';
+    const empId = empSel ? empSel.value : '';
+    const dateVal = dateInput ? dateInput.value : '';
+    const loginVal = loginInput ? loginInput.value : '';
+    const logoutVal = logoutInput ? logoutInput.value : '';
+    if (!empId || !dateVal) { err.textContent = 'Select employee and date.'; return; }
+    const dateObj = new Date(dateVal + (loginVal ? 'T' + loginVal + ':00' : 'T00:00:00'));
+    let entry = attendanceLogs.find(a => a.employeeId === empId && a.date === dateVal);
+    if (!entry) {
+      entry = { id: 'ATT' + (attendanceLogs.length + 1).toString().padStart(4, '0'), employeeId: empId, date: dateVal, loginTime: null, logoutTime: null };
+      attendanceLogs.push(entry);
+    }
+    if (loginVal) entry.loginTime = new Date(dateVal + 'T' + loginVal + ':00').toISOString();
+    if (logoutVal) entry.logoutTime = new Date(dateVal + 'T' + logoutVal + ':00').toISOString();
+    saveAttendanceLogs();
+    logAction('admin','attendance_edit','', `${empId} ${dateVal}`);
+    msg.textContent = 'Attendance saved';
+    renderAdminAttendance();
+  };
+  renderAdminAttendance();
+}
+
+// initialize persisted attendance on load
+loadAttendanceLogs();
+
+// HR dashboard functions
+function renderHRAttendance() {
+  const tbody = $('hrAttendanceTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const rows = attendanceLogs.slice().sort((a,b) => (a.date < b.date ? 1 : -1));
+  rows.forEach(rec => {
+    const emp = employees.find(e => e.id === rec.employeeId) || managers.find(m => m.id === rec.employeeId) || frontOfficeUsers.find(u => u.id === rec.employeeId) || helpDeskUsers.find(h => h.id === rec.employeeId) || financeUsers.find(f => f.id === rec.employeeId);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${rec.date}</td>
+      <td>${emp ? emp.name : rec.employeeId}</td>
+      <td>${rec.loginTime ? formatDateTime(new Date(rec.loginTime)) : '--'}</td>
+      <td>${rec.logoutTime ? formatDateTime(new Date(rec.logoutTime)) : '--'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function setupHRAttendancePanel() {
+  const empSel = $('hrAttEmpSelect');
+  const dateInput = $('hrAttDate');
+  const loginInput = $('hrAttLoginTime');
+  const logoutInput = $('hrAttLogoutTime');
+  const saveBtn = $('hrAttSaveBtn');
+  const refreshBtn = $('hrAttRefreshBtn');
+  const msg = $('hrAttendanceMsg');
+  const err = $('hrAttendanceErr');
+  if (empSel) {
+    const opts = employees.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
+    empSel.innerHTML = `<option value="">-- Select Employee --</option>` + opts;
+  }
+  if (refreshBtn) refreshBtn.onclick = () => { renderHRAttendance(); };
+  if (saveBtn) saveBtn.onclick = () => {
+    err.textContent = '';
+    msg.textContent = '';
+    const empId = empSel ? empSel.value : '';
+    const dateVal = dateInput ? dateInput.value : '';
+    const loginVal = loginInput ? loginInput.value : '';
+    const logoutVal = logoutInput ? logoutInput.value : '';
+    if (!empId || !dateVal) { err.textContent = 'Select employee and date.'; return; }
+    let entry = attendanceLogs.find(a => a.employeeId === empId && a.date === dateVal);
+    if (!entry) {
+      entry = { id: 'ATT' + (attendanceLogs.length + 1).toString().padStart(4, '0'), employeeId: empId, date: dateVal, loginTime: null, logoutTime: null };
+      attendanceLogs.push(entry);
+    }
+    if (loginVal) entry.loginTime = new Date(dateVal + 'T' + loginVal + ':00').toISOString();
+    if (logoutVal) entry.logoutTime = new Date(dateVal + 'T' + logoutVal + ':00').toISOString();
+    saveAttendanceLogs();
+    logAction('hr','attendance_edit','', `${empId} ${dateVal}`);
+    msg.textContent = 'Attendance saved';
+    renderHRAttendance();
+  };
+  renderHRAttendance();
+}
+
+function renderHREmployees() {
+  const tbody = $('hrEmployeesTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  employees.forEach(emp => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${emp.id}</td>
+      <td>${emp.name}</td>
+      <td>${emp.email || '-'}</td>
+      <td>${emp.phone || '-'}</td>
+      <td>${emp.username || '-'}</td>
+      <td><button class="btn small primary" data-hr-edit-emp="${emp.id}">Edit</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  Array.from(tbody.querySelectorAll('button[data-hr-edit-emp]')).forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-hr-edit-emp');
+      const emp = employees.find(e => e.id === id);
+      if (!emp) return;
+      const form = $('hrEmpEditForm');
+      form.classList.remove('hidden');
+      form.dataset.empId = id;
+      $('hrEmpEditName').value = emp.name || '';
+      $('hrEmpEditEmail').value = emp.email || '';
+      $('hrEmpEditPhone').value = emp.phone || '';
+      $('hrEmpEditUsername').value = emp.username || '';
+      $('hrEmpEditPassword').value = emp.password || '';
+      $('hrEmpEditMsg').textContent = '';
+      $('hrEmpEditErr').textContent = '';
+    };
+  });
+}
+function setupHREmployeeEdit() {
+  const saveBtn = $('hrEmpEditSaveBtn');
+  const cancelBtn = $('hrEmpEditCancelBtn');
+  const form = $('hrEmpEditForm');
+  const msg = $('hrEmpEditMsg');
+  const err = $('hrEmpEditErr');
+  if (cancelBtn) cancelBtn.onclick = () => { form.classList.add('hidden'); };
+  if (saveBtn) saveBtn.onclick = () => {
+    err.textContent = '';
+    msg.textContent = '';
+    const id = form.dataset.empId;
+    const emp = employees.find(e => e.id === id);
+    if (!emp) { err.textContent = 'Employee not found.'; return; }
+    emp.name = $('hrEmpEditName').value.trim();
+    emp.email = $('hrEmpEditEmail').value.trim();
+    emp.phone = $('hrEmpEditPhone').value.trim();
+    emp.username = $('hrEmpEditUsername').value.trim();
+    const pwd = $('hrEmpEditPassword').value;
+    if (pwd) emp.password = pwd;
+    logAction('hr','edit_employee', '', id);
+    msg.textContent = 'Employee updated';
+    renderHREmployees();
+  };
+}
+
+function renderHRManagers() {
+  const tbody = $('hrManagersTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  managers.forEach(m => {
+    const depts = (m.assignedDepartments || []).join(', ');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${m.id}</td>
+      <td>${m.name}</td>
+      <td>${m.email || '-'}</td>
+      <td>${m.phone || '-'}</td>
+      <td>${depts || '-'}</td>
+      <td><button class="btn small primary" data-hr-edit-mgr="${m.id}">Edit</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  Array.from(tbody.querySelectorAll('button[data-hr-edit-mgr]')).forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-hr-edit-mgr');
+      const m = managers.find(x => x.id === id);
+      if (!m) return;
+      const form = $('hrMgrEditForm');
+      form.classList.remove('hidden');
+      form.dataset.mgrId = id;
+      $('hrMgrEditName').value = m.name || '';
+      $('hrMgrEditEmail').value = m.email || '';
+      $('hrMgrEditPhone').value = m.phone || '';
+      $('hrMgrEditUsername').value = m.username || '';
+      $('hrMgrEditPassword').value = m.password || '';
+      $('hrMgrEditDepartments').value = (m.assignedDepartments || []).join(', ');
+      $('hrMgrEditMsg').textContent = '';
+      $('hrMgrEditErr').textContent = '';
+    };
+  });
+}
+function setupHRManagerEdit() {
+  const saveBtn = $('hrMgrEditSaveBtn');
+  const cancelBtn = $('hrMgrEditCancelBtn');
+  const form = $('hrMgrEditForm');
+  const msg = $('hrMgrEditMsg');
+  const err = $('hrMgrEditErr');
+  if (cancelBtn) cancelBtn.onclick = () => { form.classList.add('hidden'); };
+  if (saveBtn) saveBtn.onclick = () => {
+    err.textContent = '';
+    msg.textContent = '';
+    const id = form.dataset.mgrId;
+    const m = managers.find(x => x.id === id);
+    if (!m) { err.textContent = 'Manager not found.'; return; }
+    m.name = $('hrMgrEditName').value.trim();
+    m.email = $('hrMgrEditEmail').value.trim();
+    m.phone = $('hrMgrEditPhone').value.trim();
+    m.username = $('hrMgrEditUsername').value.trim();
+    const pwd = $('hrMgrEditPassword').value;
+    if (pwd) m.password = pwd;
+    const rawDepts = $('hrMgrEditDepartments').value.split(',').map(s => s.trim()).filter(Boolean);
+    const allowed = (typeof departmentsList !== 'undefined' && Array.isArray(departmentsList)) ? departmentsList : ["IT","Technical","CCTV","Biometric","Sales"];
+    m.assignedDepartments = rawDepts.map(d => {
+      const norm = d.charAt(0).toUpperCase() + d.slice(1).toLowerCase();
+      return allowed.includes(norm) ? norm : d;
+    }).filter(d => allowed.includes(d));
+    if (!m.assignedDepartments || m.assignedDepartments.length === 0) { err.textContent = 'Please assign at least one department'; return; }
+    logAction('hr','edit_manager','', id);
+    msg.textContent = 'Manager updated';
+    renderHRManagers();
+  };
+}
+
 /* Front Office: Customer Type Selection Handler */
 function setupFrontOfficeHandlers() {
   const custTypeSelect = $("foCustType");
@@ -1950,7 +2840,7 @@ function setupFrontOfficeHandlers() {
   const saveNewCustBtn = $("foSaveNewCustBtn");
   const cancelNewCustBtn = $("foCancelNewCustBtn");
   const callTypeSelect = $("foCallType");
-  const callGroupSelect = $("foCallGroup");
+  // group selection removed; auto-assign managers by call type
   const createTicketBtn = $("foCreateTicketBtn");
   const companyNameDiv = $("foCompanyNameDiv");
   const contactPersonDiv = $("foContactPersonDiv");
@@ -2039,40 +2929,20 @@ function setupFrontOfficeHandlers() {
     };
   }
 
-  // Step 3: Call Type and Groups
+  // Step 3: Call Type -> show auto-assigned managers
   if (callTypeSelect) {
     callTypeSelect.onchange = () => {
       const type = callTypeSelect.value;
-      callGroupSelect.innerHTML = "<option value=''>-- Select Group --</option>";
-      
-      if (type) {
-        const matchingGroups = callGroups.filter(g => (g.callType && g.callType === type) || (g.department && g.department === type));
-        matchingGroups.forEach(group => {
-          const option = document.createElement("option");
-          option.value = group.id;
-          option.textContent = group.name;
-          callGroupSelect.appendChild(option);
-        });
-      }
-    };
-  }
-
-  // Step 3: When group is selected, show auto-assigned managers
-  if (callGroupSelect) {
-    callGroupSelect.onchange = () => {
-      const groupId = callGroupSelect.value;
-      if (groupId) {
-        const mgrIds = managers.filter(m => (m.assignedGroups || []).includes(groupId)).map(m => m.id);
-        if (mgrIds.length > 0) {
-          const managerNames = mgrIds.map(mId => {
-            const mgr = managers.find(m => m.id === mId);
-            return mgr ? mgr.name : mId;
-          }).join(", ");
-          autoAssignedManagersDiv.textContent = `Auto-assigned to: ${managerNames}`;
-          autoAssignedManagersDiv.style.display = "block";
-        } else {
-          autoAssignedManagersDiv.style.display = "none";
-        }
+      if (!type) { autoAssignedManagersDiv.style.display = "none"; return; }
+      const groupsForType = callGroups.filter(g => (g.callType && g.callType === type));
+      const mgrIds = managers.filter(m => (m.assignedGroups || []).some(gid => groupsForType.some(g => g.id === gid))).map(m => m.id);
+      if (mgrIds.length > 0) {
+        const managerNames = mgrIds.map(mId => {
+          const mgr = managers.find(m => m.id === mId);
+          return mgr ? mgr.name : mId;
+        }).join(", ");
+        autoAssignedManagersDiv.textContent = `Auto-assigned to: ${managerNames}`;
+        autoAssignedManagersDiv.style.display = "block";
       } else {
         autoAssignedManagersDiv.style.display = "none";
       }
@@ -2167,12 +3037,11 @@ function createTicketFromFrontOffice() {
   const callType = $("foCallType").value;
   const problemTitle = $("foProblemTitle").value.trim();
   const problemDesc = $("foProblemDesc").value.trim();
-  const callGroupId = $("foCallGroup").value;
 
   $("foTicketErr").textContent = "";
   $("foTicketMsg").textContent = "";
 
-  if (!custId || !callType || !problemTitle || !problemDesc || !callGroupId) {
+  if (!custId || !callType || !problemTitle || !problemDesc) {
     $("foTicketErr").textContent = "Please fill all required fields.";
     return;
   }
@@ -2183,14 +3052,7 @@ function createTicketFromFrontOffice() {
     return;
   }
 
-  const group = callGroups.find(g => g.id === callGroupId);
-  const assignedMgrIds = managers.filter(m => (m.assignedGroups || []).includes(callGroupId)).map(m => m.id);
-  if (!group || assignedMgrIds.length === 0) {
-    $("foTicketErr").textContent = "Selected group has no assigned managers.";
-    return;
-  }
-
-  // Create ticket that will be visible to ALL managers in the group
+  // Create ticket; Help Desk will select department and assign managers
   const ticketId = "TKT" + (tickets.length + 1).toString().padStart(4, "0");
   const newTicket = {
     id: ticketId,
@@ -2201,16 +3063,16 @@ function createTicketFromFrontOffice() {
     callType: callType,
     problemTitle: problemTitle,
     description: problemDesc,
-    callGroup: callGroupId,
+    callGroup: null,
     frontOfficeUser: currentUser.userId,
-    assignedManagerIds: assignedMgrIds.slice(),
+    assignedManagerIds: [],
     acceptedByManager: null, // Which manager accepted it
     assignedEmployeeId: null,
     taskStatus: null,
     taskProgress: 0,
     completedDate: null,
     raisedDate: new Date().toISOString().split("T")[0],
-    status: "Pending Assignment",
+    status: "Raised",
     paymentStatus: "pending",
     paymentReceivedDate: null,
     amountPaid: 0,
@@ -2218,8 +3080,8 @@ function createTicketFromFrontOffice() {
   };
 
   tickets.push(newTicket);
-  logAction('frontoffice','create_ticket', newTicket.id, `${callType}/${callGroupId}`);
-  $("foTicketMsg").textContent = `Ticket ${ticketId} created successfully! Sent to ${group.name} (${assignedMgrIds.length} managers).`;
+  logAction('frontoffice','create_ticket', newTicket.id, `${callType}`);
+  $("foTicketMsg").textContent = `Ticket ${ticketId} created successfully! Sent to Help Desk.`;
 
   // Reset and show ticket list
   setTimeout(() => {
@@ -2288,10 +3150,11 @@ function renderEmployeeTickets() {
 
   const myEmployeeId = currentUser.employeeId;
   const myTickets = tickets.filter(t => t.assignedEmployeeId === myEmployeeId);
+  const hasSiteVisitMode = myTickets.some(t => (t.siteVisitRequired || t.salesVerification) && (t.status === 'Assigned' || t.status === 'In Progress'));
 
-  // Separate tickets by status
-  const pendingTickets = myTickets.filter(t => t.status === "Assigned");
-  const activeTickets = myTickets.filter(t => t.status === "In Progress");
+  // Separate tickets by status (exclude site visit assignments)
+  const pendingTickets = myTickets.filter(t => t.status === "Assigned" && !t.siteVisitRequired && !t.salesVerification);
+  const activeTickets = myTickets.filter(t => t.status === "In Progress" && !t.siteVisitRequired && !t.salesVerification);
   const completedTickets = myTickets.filter(t => t.status === "Reported" || t.status === "Finished");
 
   // Render Pending Tasks (Need Accept/Reject/Swap)
@@ -2363,7 +3226,8 @@ function renderEmployeeTickets() {
     btn.onclick = () => {
       const ticketId = btn.getAttribute("data-view-completed");
       const ticket = tickets.find(t => t.id === ticketId);
-      alert(`Task: ${ticket.id}\nCustomer: ${ticket.customerName}\nCompleted: ${ticket.completedDate}\nNotes: ${ticket.workNotes || "No notes"}`);
+      const el = $("workUpdateMsg");
+      if (el) el.textContent = `Completed ${ticket.id} • ${ticket.customerName} • ${ticket.completedDate || ''}`;
     };
   });
 
@@ -2446,7 +3310,7 @@ function acceptTask(ticketId) {
     updates: []
   };
 
-  $("taskResponseMsg").textContent = "Task accepted! You can now begin work.";
+      $("taskResponseMsg").textContent = "Task accepted. You can now begin work.";
   setTimeout(() => {
     closeTaskResponseModal();
     renderEmployeeTickets();
@@ -2517,6 +3381,8 @@ function openTaskWorkPanel(ticketId) {
 
   const panel = $("taskWorkPanel");
   panel.classList.remove("hidden");
+  const upd = $("engineerUpdateSection");
+  if (upd) upd.classList.remove("hidden");
 
   // Fill task header
   $("workTicketId").textContent = ticket.id;
@@ -2550,6 +3416,7 @@ function updateWorkTimeDisplay() {
   $("workTotalTime").textContent = `${hours}h ${minutes}m`;
 
   // Update break status if on break
+  // Break session break the session
   if (session.currentBreakStart) {
     const breakMs = now - session.currentBreakStart;
     const breakMins = Math.floor(breakMs / (1000 * 60));
@@ -2562,7 +3429,7 @@ function startBreak() {
   if (!selectedTaskForWork) return;
   const session = taskWorkSessionData[selectedTaskForWork.id];
   if (session.currentBreakStart) {
-    alert("Already on break!");
+    $("workUpdateErr").textContent = "Already on break";
     return;
   }
 
@@ -2577,7 +3444,7 @@ function endBreak() {
   if (!selectedTaskForWork) return;
   const session = taskWorkSessionData[selectedTaskForWork.id];
   if (!session.currentBreakStart) {
-    alert("No active break!");
+    $("workUpdateErr").textContent = "No active break";
     return;
   }
 
@@ -2721,8 +3588,9 @@ function openPaymentPage(ticket) {
   paymentTicket = ticket;
   $("payTicketId").textContent = ticket.id;
   $("payCustomer").textContent = ticket.customerName;
-  $("payService").textContent = ticket.serviceType;
-  $("payAmount").textContent = servicePricing[ticket.serviceType] || 0;
+  const svc = ticket.serviceType || ticket.callType || 'Sales';
+  $("payService").textContent = svc;
+  $("payAmount").textContent = servicePricing[svc] || 0;
   if ($("paymentStatusSelect")) $("paymentStatusSelect").value = ticket.paymentStatus || 'pending';
   if ($("paymentAmountInput")) $("paymentAmountInput").value = ticket.amountPaid || '';
   const hist = $("paymentHistoryList");
@@ -2796,6 +3664,22 @@ function login() {
       $("loginError").textContent = "Invalid finance credentials.";
       return;
     }
+  } else if (role === "helpdesk") {
+    const hd = helpDeskUsers.find(h => (h.username === username || h.email === username) && h.password === password);
+    if (hd) {
+      currentUser = { role: "helpdesk", username, name: hd.name, userId: hd.id };
+    } else {
+      $("loginError").textContent = "Invalid help desk credentials.";
+      return;
+    }
+  } else if (role === "hr") {
+    const hr = hrUsers.find(h => (h.username === username || h.email === username) && h.password === password);
+    if (hr) {
+      currentUser = { role: "hr", username, name: hr.name, userId: hr.id };
+    } else {
+      $("loginError").textContent = "Invalid HR credentials.";
+      return;
+    }
   } else {
     $("loginError").textContent = "Invalid credentials.";
     return;
@@ -2818,9 +3702,14 @@ function onLoginSuccess() {
     renderCallGroups();
     renderPendingTicketsForManager();
     renderAssignedTicketsForManager();
+    renderSalesApprovalsForManager();
+    renderSalesVerificationForManager();
+    renderHandoverApprovalsForManager();
     renderTaskProgressReports();
     selectedTicketForEmployee = null;
     if ($("ticketDescInfo")) $("ticketDescInfo").textContent = "Select a ticket to view description and actions.";
+
+    startIdleTimer();
 
     if (currentUser.role === "admin") {
       setupAdminTabNavigation();
@@ -2844,35 +3733,94 @@ function onLoginSuccess() {
       setupAdminAdminForm();
       renderAdminAdmins();
       applyAdminPermissionUI();
+      setupAdminAttendancePanel();
+      renderAdminAttendance();
       
       showSection("adminDashboard");
     } else if (currentUser.role === "frontoffice") {
       setupFrontOfficeHandlers();
       renderFrontOfficeTickets();
       showSection("frontOfficeDashboard");
+    } else if (currentUser.role === "helpdesk") {
+      setupHelpDeskHandlers();
+      renderHelpDeskTickets();
+      showSection("helpDeskDashboard");
   } else if (currentUser.role === "manager") {
-      renderManagerEmployeesBox();
-      showSection("managerDashboard");
+    renderManagerEmployeesBox();
+    setupManagerNewTicketForm();
+    renderSalesApprovalsForManager();
+    showSection("managerDashboard");
   } else if (currentUser.role === "employee") {
     renderEmployeeTickets();
+    setupEngineerUpdateSection();
+    setupSiteVisitForm();
+    setupSalesReportForm();
+    setupEmployeeAttendance();
+    setupEmployeeModeSwitch();
     showSection("employeeDashboard");
+  } else if (currentUser.role === "hr") {
+    setupHRAttendancePanel();
+    renderHRAttendance();
+    renderHREmployees();
+    setupHREmployeeEdit();
+    renderHRManagers();
+    setupHRManagerEdit();
+    if ($("logoutFromHR")) $("logoutFromHR").onclick = logout;
+    showSection("hrDashboard");
   } else if (currentUser.role === "finance") {
     renderFinanceTickets();
     showSection("financeDashboard");
   }
   } catch (error) {
     console.error("Login error:", error);
-    alert("Error loading dashboard: " + error.message);
+    if ($("loginError")) $("loginError").textContent = "Error loading dashboard: " + error.message;
     currentUser = null;
     updateHeader();
   }
+  const rid = currentUser && (currentUser.employeeId || currentUser.userId);
+  const rrole = currentUser && currentUser.role;
+  if (rid && rrole !== 'admin' && rrole !== 'hr') { addAttendanceLog(rid, 'login'); }
 }
 
 /* Logout */
 function logout() {
+  const rid = currentUser && (currentUser.employeeId || currentUser.userId);
+  const rrole = currentUser && currentUser.role;
+  if (currentUser && rrole !== 'admin' && rrole !== 'hr') { addAttendanceLog(rid, 'logout'); }
   currentUser = null;
   updateHeader();
   showSection("loginPage");
+  stopIdleTimer();
+}
+
+/* Idle session management: auto-logout after 180s inactivity */
+let idleTimerId = null;
+const IDLE_TIMEOUT_MS = 180000; // 180 seconds
+
+function handleIdleLogout() {
+  if (!currentUser) return;
+  logAction('system','auto_logout','', 'idle 180s');
+  logout();
+  const msg = "Session expired due to inactivity.";
+  const el = $("loginError");
+  if (el) el.textContent = msg;
+}
+
+function startIdleTimer() {
+  stopIdleTimer();
+  idleTimerId = setTimeout(handleIdleLogout, IDLE_TIMEOUT_MS);
+}
+
+function resetIdleTimer() {
+  if (!currentUser) return;
+  startIdleTimer();
+}
+
+function stopIdleTimer() {
+  if (idleTimerId) {
+    clearTimeout(idleTimerId);
+    idleTimerId = null;
+  }
 }
 
 /* Event listeners */
@@ -2881,6 +3829,14 @@ window.onload = () => {
 
   $("loginBtn").onclick = login;
   $("logoutBtn").onclick = logout;
+  const lb = $("loginBtn"); if (lb) lb.textContent = "Sign In";
+  const lob = $("logoutBtn"); if (lob) lob.textContent = "Sign Out";
+  const navOutIds = ["logoutFromAdmin","logoutFromFrontOffice","logoutFromManager","logoutFromEmployee","logoutFromHelpDesk","logoutFromHR","logoutFromFinance"];
+  navOutIds.forEach(id => { const el = $(id); if (el) el.textContent = "Sign Out"; });
+
+  ['click','mousemove','keydown','wheel','touchstart','touchmove','scroll'].forEach(evt => {
+    document.addEventListener(evt, resetIdleTimer, { passive: true });
+  });
 
   // Show/hide department field based on role selection
   const empRoleSelect = $("empRole");
@@ -2979,6 +3935,7 @@ window.onload = () => {
     if (role === "employee") return employees.find(u => (u.username && u.username === ident) || u.email === ident || u.phone === ident);
     if (role === "admin") return admins.find(u => u.username === ident || u.email === ident);
     if (role === "finance") return financeUsers.find(u => u.username === ident || u.email === ident || u.phone === ident);
+    if (role === "hr") return hrUsers.find(u => u.username === ident || u.email === ident || u.phone === ident);
     return null;
   }
 
@@ -3101,6 +4058,8 @@ window.onload = () => {
         user = employees.find(u => (u.username && u.username === ident) || u.email === ident);
       } else if (role === "admin") {
         user = admins.find(u => u.username === ident || u.email === ident);
+      } else if (role === "hr") {
+        user = hrUsers.find(u => u.username === ident || u.email === ident);
       }
 
       if (!user) {
@@ -3609,7 +4568,6 @@ window.onload = () => {
         return;
       }
       const ticket = selectedTicketForEmployee;
-      if (!confirm("Report this ticket as completed to Front Office?")) return;
       ticket.status = "Reported";
       ticket.completedDate = formatDateTime();
       renderEmployeeTickets();
@@ -3617,27 +4575,37 @@ window.onload = () => {
       renderAdminAllTickets();
       renderFrontOfficeReportedTickets();
       updateStats();
-      alert("Ticket reported to Front Office. Front Office will send payment & feedback to customer.");
+      const el = $("workUpdateMsg");
+      if (el) el.textContent = "Reported to Front Office. Payment & feedback will be handled by FO.";
     };
   }
 
   $("payNowBtn").onclick = () => {
+    const btn = $("payNowBtn");
+    if (btn) btn.disabled = true;
     if (!paymentTicket) return;
-    const statusSel = $("paymentStatusSelect");
-    const amtInput = $("paymentAmountInput");
-    const statusVal = statusSel ? statusSel.value : 'pending';
-    const amtVal = amtInput && amtInput.value ? parseFloat(amtInput.value) : 0;
+    const invoiceDate = $("invoiceDate").value;
+    const billedAmount = parseFloat($("billedAmount").value || '0');
+    const receivedAmount = parseFloat($("paymentReceivedAmount").value || '0');
+    const statusVal = $("paymentStatusSelect").value || 'Pending';
+    paymentTicket.invoiceDate = invoiceDate || null;
+    paymentTicket.billedAmount = billedAmount || 0;
+    paymentTicket.amountPaid = receivedAmount || 0;
     paymentTicket.paymentStatus = statusVal;
-    paymentTicket.amountPaid = amtVal;
-    if (statusVal === 'received') {
-      paymentTicket.paymentReceivedDate = formatDateTime();
-    }
     if (!paymentTicket.paymentHistory) paymentTicket.paymentHistory = [];
-    paymentTicket.paymentHistory.push({ date: formatDateTime(), method: 'Cash', amount: amtVal, status: statusVal });
-    $("payMsg").textContent = "Payment saved.";
+    paymentTicket.paymentHistory.push({ date: formatDateTime(), method: 'Accounts', amount: receivedAmount, status: statusVal });
+    // Only close when work is completed and manager verified
+    if (statusVal === 'Full Payment' && paymentTicket.status === 'Reported' && paymentTicket.verifiedByManager) {
+      paymentTicket.status = 'Finished';
+    }
+    $("payMsg").textContent = "Accounts update saved.";
     renderFinanceTickets();
   };
   $("submitFeedbackBtn").onclick = () => {
+    const submitBtn = $("submitFeedbackBtn");
+    const payBtn = $("payNowBtn");
+    if (submitBtn) submitBtn.disabled = true;
+    if (payBtn) payBtn.disabled = true;
     if (!paymentTicket) return;
     const rating = $("feedbackRating").value;
     const comment = $("feedbackComment").value.trim();
@@ -3646,15 +4614,18 @@ window.onload = () => {
       $("feedbackMsg").textContent = "Please enter finance confirmation text.";
       return;
     }
-    const rec = document.querySelector("input[name=recommend]:checked").value;
+    const recEl = document.querySelector("input[name=recommend]:checked");
+    const rec = recEl ? recEl.value : 'yes';
     feedbacks.push({
       ticketId: paymentTicket.id,
       rating,
       comment,
       recommendation: rec
     });
-    // mark ticket as Finished and record payment/feedback send time
-    paymentTicket.status = "Finished";
+    // Finalize only for completed & verified jobs
+    if (paymentTicket.status === 'Reported' && paymentTicket.verifiedByManager) {
+      paymentTicket.status = "Finished";
+    }
     paymentTicket.paymentSentDate = formatDateTime();
     logAction('finance','confirm_and_complete', paymentTicket.id, confirmText);
     $("feedbackMsg").textContent = "Feedback submitted and payment sent. Ticket marked Finished.";
@@ -3689,6 +4660,8 @@ window.onload = () => {
   $("logoutFromFrontOffice").onclick = logout;
   $("logoutFromManager").onclick = logout;
   $("logoutFromEmployee").onclick = logout;
+  $("logoutFromHelpDesk").onclick = logout;
+  $("logoutFromHR").onclick = logout;
 
   // Employee Work Panel Event Listeners
   const startBreakBtn = $("startBreakBtn");
@@ -3729,7 +4702,7 @@ window.onload = () => {
   if (updateTaskProgressBtn) {
     updateTaskProgressBtn.onclick = () => {
       if (!selectedTicketForEmployee) {
-        alert("No ticket selected");
+        $("progressUpdateErr").textContent = "Select a ticket first";
         return;
       }
       const status = $("taskStatusSelect").value;
@@ -3766,11 +4739,11 @@ window.onload = () => {
   if (reportTaskBtn) {
     reportTaskBtn.onclick = () => {
       if (!selectedTicketForEmployee) {
-        alert("No ticket selected");
+        $("progressUpdateErr").textContent = "Select a ticket first";
         return;
       }
       if (!selectedTicketForEmployee.taskStatus) {
-        alert("Please update task status first");
+        $("progressUpdateErr").textContent = "Update task status first";
         return;
       }
 
@@ -3779,7 +4752,7 @@ window.onload = () => {
       
       // Call render function to show report in manager dashboard
       renderTaskProgressReports();
-      alert("Task details reported to manager. Manager can view in Task Progress Reports section.");
+      $("progressUpdateMsg").textContent = "Details shared. Manager can view in Task Progress Reports.";
     };
   }
 
@@ -3791,6 +4764,379 @@ window.onload = () => {
     };
   }
 };
+
+/* Manager New Ticket Setup */
+function setupManagerNewTicketForm() {
+  const btn = $("mgrNewTicketBtn");
+  const form = $("mgrNewTicketForm");
+  const custSel = $("mgrSelectCustomer");
+  const createBtn = $("mgrCreateTicketBtn");
+  const cancelBtn = $("mgrCancelCreateBtn");
+  const newCustBtn = $("mgrNewCustomerBtn");
+  const newCustForm = $("mgrNewCustomerForm");
+  const custTypeSel = $("mgrCustType");
+  const individualBox = $("mgrIndividualNameBox");
+  const companyBox = $("mgrCompanyNameBox");
+  const contactBox = $("mgrContactPersonBox");
+  const gstBox = $("mgrCustGSTBox");
+  const saveNewCustBtn = $("mgrSaveNewCustomerBtn");
+  const cancelNewCustBtn = $("mgrCancelNewCustomerBtn");
+  if (btn) {
+    btn.onclick = () => {
+      form.classList.remove("hidden");
+      // populate customers
+      custSel.innerHTML = '<option value="">-- Select Customer --</option>' + customers.map(c => `<option value="${c.id}">${c.type === 'corporate' ? c.companyName : c.name} (${c.phone})</option>`).join('');
+      $("mgrNewTicketMsg").textContent = '';
+      $("mgrNewTicketErr").textContent = '';
+    };
+  }
+  if (cancelBtn) {
+    cancelBtn.onclick = () => form.classList.add("hidden");
+  }
+  if (newCustBtn && newCustForm) {
+    newCustBtn.onclick = () => {
+      newCustForm.classList.remove('hidden');
+      $("mgrNewCustomerMsg").textContent = '';
+      $("mgrNewCustomerErr").textContent = '';
+      if (custTypeSel) custTypeSel.value = '';
+      $("mgrCustName").value = '';
+      $("mgrCompanyName").value = '';
+      $("mgrContactPerson").value = '';
+      $("mgrCustPhone").value = '';
+      $("mgrCustEmail").value = '';
+      $("mgrCustAddress").value = '';
+      $("mgrCustGST").value = '';
+      individualBox.classList.remove('hidden');
+      companyBox.classList.add('hidden');
+      contactBox.classList.add('hidden');
+      gstBox.classList.add('hidden');
+    };
+  }
+  if (custTypeSel) {
+    custTypeSel.onchange = () => {
+      const v = custTypeSel.value;
+      if (v === 'corporate') {
+        individualBox.classList.add('hidden');
+        companyBox.classList.remove('hidden');
+        contactBox.classList.remove('hidden');
+        gstBox.classList.remove('hidden');
+      } else {
+        individualBox.classList.remove('hidden');
+        companyBox.classList.add('hidden');
+        contactBox.classList.add('hidden');
+        gstBox.classList.add('hidden');
+      }
+    };
+  }
+  if (cancelNewCustBtn && newCustForm) {
+    cancelNewCustBtn.onclick = () => newCustForm.classList.add('hidden');
+  }
+  if (saveNewCustBtn) {
+    saveNewCustBtn.onclick = () => {
+      const type = custTypeSel.value;
+      const name = $("mgrCustName").value.trim();
+      const companyName = $("mgrCompanyName").value.trim();
+      const contactPerson = $("mgrContactPerson").value.trim();
+      const phone = $("mgrCustPhone").value.trim();
+      const email = $("mgrCustEmail").value.trim();
+      const address = $("mgrCustAddress").value.trim();
+      const gst = $("mgrCustGST").value.trim();
+      $("mgrNewCustomerErr").textContent = '';
+      $("mgrNewCustomerMsg").textContent = '';
+      if (!type || !phone || !email || (!name && !companyName)) { $("mgrNewCustomerErr").textContent = 'Fill required fields.'; return; }
+      const id = 'CUS' + (customers.length + 1).toString().padStart(3, '0');
+      customers.push({ id, type, name: type === 'individual' ? name : companyName, companyName: type === 'corporate' ? companyName : '', phone, email, address, gst: type === 'corporate' ? gst : '', contactPerson: type === 'corporate' ? contactPerson : '', companyId: '' });
+      custSel.innerHTML = '<option value="">-- Select Customer --</option>' + customers.map(c => `<option value="${c.id}">${c.type === 'corporate' ? c.companyName : c.name} (${c.phone})</option>`).join('');
+      custSel.value = id;
+      $("mgrNewCustomerMsg").textContent = 'Customer saved.';
+      setTimeout(() => { newCustForm.classList.add('hidden'); }, 1200);
+    };
+  }
+  if (createBtn) {
+    createBtn.onclick = () => {
+      const custId = custSel.value;
+      const ct = $("mgrCallType").value;
+      const title = $("mgrProblemTitle").value.trim();
+      const desc = $("mgrProblemDesc").value.trim();
+      const referredName = $("mgrReferredName") ? $("mgrReferredName").value.trim() : '';
+      $("mgrNewTicketErr").textContent = '';
+      $("mgrNewTicketMsg").textContent = '';
+      if (!custId || !ct || !title || !desc) { $("mgrNewTicketErr").textContent = 'Fill all fields.'; return; }
+      const cust = customers.find(c => c.id === custId);
+      const id = "TKT" + (tickets.length + 1).toString().padStart(4, "0");
+      tickets.push({
+        id,
+        customerId: cust.id,
+        customerName: cust.type === 'corporate' ? cust.companyName : cust.name,
+        customerEmail: cust.email,
+        customerPhone: cust.phone,
+        callType: ct,
+        problemTitle: title,
+        description: desc,
+        callGroup: null,
+        raisedByManager: currentUser.userId,
+        referralType: referredName ? 'Manager' : '',
+        referredByName: referredName || '',
+        referredByManagerId: referredName ? currentUser.userId : null,
+        assignedManagerIds: [],
+        acceptedByManager: null,
+        assignedEmployeeId: null,
+        taskStatus: null,
+        taskProgress: 0,
+        completedDate: null,
+        raisedDate: new Date().toISOString().split("T")[0],
+        status: "Raised",
+        paymentStatus: "pending",
+        paymentHistory: []
+      });
+      logAction('manager','create_ticket', id, ct);
+      $("mgrNewTicketMsg").textContent = `Ticket ${id} created. Sent to Help Desk.`;
+      setTimeout(() => {
+        form.classList.add("hidden");
+        renderHelpDeskTickets();
+        renderAdminAllTickets();
+        updateStats();
+      }, 1200);
+    };
+  }
+}
+
+/* Engineer Update Section Logic */
+function setupEngineerUpdateSection() {
+  const statusSel = $("engStatus");
+  const completeBox = $("engCompleteFields");
+  const incompleteBox = $("engIncompleteFields");
+  const submitBtn = $("engSubmitUpdateBtn");
+  if (statusSel) {
+    statusSel.onchange = () => {
+      const v = statusSel.value;
+      completeBox.classList.toggle('hidden', v !== 'Complete');
+      incompleteBox.classList.toggle('hidden', v !== 'Incomplete');
+    };
+  }
+  if (submitBtn) {
+    submitBtn.onclick = () => {
+      $("engUpdateErr").textContent = '';
+      $("engUpdateMsg").textContent = '';
+      const v = $("engStatus").value;
+      if (!selectedTaskForWork) { $("engUpdateErr").textContent = 'Open a task in Work Panel first.'; return; }
+      const t = selectedTaskForWork;
+      t.taskStartDateTime = $("engTaskStart").value || null;
+      t.taskEndDateTime = $("engTaskEnd").value || null;
+      if (v === 'Complete') {
+        t.dcNo = $("engDCNo").value.trim();
+        t.engineerRemarks = $("engRemarks").value.trim();
+        t.materialsUsed = $("engMaterialsUsed").value.trim();
+        if (t.siteVisitRequired) {
+          t.status = 'Quotation Ready';
+          t.reportedToManager = true;
+          t.awaitingManagerQuotationReview = true;
+          $("engUpdateMsg").textContent = 'Quotation sent to Manager for review.';
+        } else {
+          t.status = 'Reported';
+          t.awaitingHandover = true;
+          $("engUpdateMsg").textContent = 'Engineer update saved.';
+        }
+      } else if (v === 'Incomplete') {
+        t.status = 'In Progress';
+        t.pendingReason = $("engPendingReason").value.trim();
+        t.nextFollowUpDate = $("engNextFollowUp").value || null;
+        $("engUpdateMsg").textContent = 'Engineer update saved.';
+      }
+      renderAssignedTicketsForManager();
+      renderHandoverApprovalsForManager();
+      renderEmployeeTickets();
+    };
+  }
+}
+
+function setupSiteVisitForm() {
+  const photoInput = $("siteVisitPhoto");
+  const preview = $("siteVisitPhotoPreview");
+  const submitBtn = $("siteVisitSubmitBtn");
+  const ticketSel = $("siteVisitSelectTicket");
+  // Populate ticket dropdown with employee-assigned tickets relevant to site visit or sales verification
+  if (ticketSel) {
+    const myEmployeeId = currentUser && currentUser.employeeId;
+              const myTickets = tickets.filter(t => t.assignedEmployeeId === myEmployeeId && (t.status === 'Assigned' || t.status === 'In Progress'));
+              const visitable = myTickets.filter(t => t.siteVisitRequired || t.salesVerification);
+              ticketSel.innerHTML = '<option value="">-- Select Ticket --</option>' + visitable.map(t => `<option value="${t.id}">${t.id} • ${t.customerName}</option>`).join('');
+  }
+  if (photoInput && preview) {
+    photoInput.onchange = () => {
+      preview.innerHTML = "";
+      const file = photoInput.files && photoInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = document.createElement("img");
+        img.src = reader.result;
+        img.style.maxWidth = "200px";
+        img.style.borderRadius = "6px";
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    };
+  }
+  if (submitBtn) {
+    submitBtn.onclick = () => {
+      $("siteVisitErr").textContent = "";
+      $("siteVisitMsg").textContent = "";
+      const tid = ticketSel ? ticketSel.value : '';
+      if (!tid) { $("siteVisitErr").textContent = "Select a ticket for site visit."; return; }
+      const t = tickets.find(x => x.id === tid);
+      if (!t || t.assignedEmployeeId !== currentUser.employeeId) { $("siteVisitErr").textContent = "Invalid ticket selection."; return; }
+      const statusRaw = $("siteVisitedSelect").value;
+      const quotation = $("siteVisitQuotation").value.trim();
+      const file = $("siteVisitPhoto").files && $("siteVisitPhoto").files[0];
+      if (!statusRaw) { $("siteVisitErr").textContent = "Select site visit status."; return; }
+      const status = (statusRaw === 'yes_im_in_site' || statusRaw === 'yes') ? 'OnSite' :
+                     (statusRaw === 'on_the_way') ? 'OnTheWay' :
+                     (statusRaw === 'no') ? 'NotOnSite' : statusRaw;
+      if (!quotation) { $("siteVisitErr").textContent = "Enter description."; return; }
+      const finalize = (photoName, photoData) => {
+        t.siteVisitStatus = status;
+        t.engineerRemarks = quotation;
+        t.siteVisitPhotoName = photoName || '';
+        t.siteVisitPhotoData = photoData || '';
+        if (t.salesVerification) {
+          t.awaitingSalesEmployeeVerification = false;
+          t.awaitingSalesManagerVerification = true;
+          t.routeToSales = true;
+          t.status = 'Pending Sales Approval';
+          $("siteVisitMsg").textContent = "Sales verification report submitted to Sales Manager.";
+          renderSalesVerificationForManager();
+        } else {
+          t.status = 'Quotation Ready';
+          t.reportedToManager = true;
+          t.awaitingManagerQuotationReview = true;
+          $("siteVisitMsg").textContent = "Site visit report submitted to Manager.";
+          renderAssignedTicketsForManager();
+        }
+        renderEmployeeTickets();
+      };
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => finalize(file.name, reader.result);
+        reader.readAsDataURL(file);
+      } else {
+        finalize('', '');
+      }
+    };
+  }
+}
+
+function setupSalesReportForm() {
+  const ticketSel = $("salesReportSelectTicket");
+  const photoInput = $("salesReportPhoto");
+  const preview = $("salesReportPhotoPreview");
+  const verifyBtn = $("salesReportVerifyBtn");
+  const declineBtn = $("salesReportDeclineBtn");
+  if (ticketSel) {
+    const myEmployeeId = currentUser && currentUser.employeeId;
+    const myTickets = tickets.filter(t => t.assignedEmployeeId === myEmployeeId && (t.status === 'Assigned' || t.status === 'In Progress') && t.salesVerification);
+    ticketSel.innerHTML = '<option value="">-- Select Ticket --</option>' + myTickets.map(t => `<option value="${t.id}">${t.id} • ${t.customerName}</option>`).join('');
+  }
+  if (photoInput && preview) {
+    photoInput.onchange = () => {
+      preview.innerHTML = "";
+      const file = photoInput.files && photoInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = document.createElement("img");
+        img.src = reader.result;
+        img.style.maxWidth = "200px";
+        img.style.borderRadius = "6px";
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    };
+  }
+  if (verifyBtn) {
+    verifyBtn.onclick = () => {
+      $("salesReportErr").textContent = "";
+      $("salesReportMsg").textContent = "";
+      const tid = ticketSel ? ticketSel.value : '';
+      if (!tid) { $("salesReportErr").textContent = "Select a ticket."; return; }
+      const t = tickets.find(x => x.id === tid);
+      if (!t || t.assignedEmployeeId !== currentUser.employeeId) { $("salesReportErr").textContent = "Invalid ticket selection."; return; }
+      const desc = $("salesReportDesc").value.trim();
+      const file = $("salesReportPhoto").files && $("salesReportPhoto").files[0];
+      const finalize = (photoName, photoData) => {
+        t.salesEmployeeReportDesc = desc || '';
+        t.salesEmployeeReportPhotoName = photoName || '';
+        t.salesEmployeeReportPhotoData = photoData || '';
+        t.awaitingSalesEmployeeVerification = false;
+        t.awaitingSalesManagerVerification = true;
+        t.routeToSales = true;
+        t.status = 'Pending Sales Approval';
+        $("salesReportMsg").textContent = "Verification sent to Sales Manager.";
+        renderSalesVerificationForManager();
+        renderSalesApprovalsForManager();
+        renderEmployeeTickets();
+      };
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => finalize(file.name, reader.result);
+        reader.readAsDataURL(file);
+      } else {
+        finalize('', '');
+      }
+    };
+  }
+  if (declineBtn) {
+    declineBtn.onclick = () => {
+      $("salesReportErr").textContent = "";
+      $("salesReportMsg").textContent = "";
+      const tid = ticketSel ? ticketSel.value : '';
+      if (!tid) { $("salesReportErr").textContent = "Select a ticket."; return; }
+      const t = tickets.find(x => x.id === tid);
+      if (!t || t.assignedEmployeeId !== currentUser.employeeId) { $("salesReportErr").textContent = "Invalid ticket selection."; return; }
+      const desc = $("salesReportDesc").value.trim();
+      const file = $("salesReportPhoto").files && $("salesReportPhoto").files[0];
+      if (!desc) { $("salesReportErr").textContent = "Enter reason for decline."; return; }
+      const finalize = (photoName, photoData) => {
+        t.salesEmployeeDeclined = true;
+        t.salesEmployeeDeclineRemark = desc;
+        t.salesEmployeeDeclinePhotoName = photoName || '';
+        t.salesEmployeeDeclinePhotoData = photoData || '';
+        t.awaitingSalesEmployeeVerification = false;
+        t.awaitingSalesManagerVerification = false;
+        t.routeToSales = true;
+        t.status = 'Pending Sales Approval';
+        $("salesReportMsg").textContent = "Decline sent to Sales Manager.";
+        renderSalesApprovalsForManager();
+        renderEmployeeTickets();
+      };
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => finalize(file.name, reader.result);
+        reader.readAsDataURL(file);
+      } else {
+        finalize('', '');
+      }
+    };
+  }
+}
+
+function setupEmployeeModeSwitch() {
+  const btnTask = $("showTaskModeBtn");
+  const btnVisit = $("showSiteVisitModeBtn");
+  const showTask = () => {
+    ["employeePendingCard","employeeActiveCard","employeeCompletedCard"].forEach(id => { const el = $(id); if (el) el.classList.remove('hidden'); });
+    ["taskWorkPanel","engineerUpdateSection","employeeHistoryCard"].forEach(id => { const el = $(id); if (el) el.classList.add('hidden'); });
+    const sv = $("siteVisitSection"); if (sv) sv.classList.add('hidden');
+  };
+  const showVisit = () => {
+    const sectionsTask = ["employeePendingCard","employeeActiveCard","taskWorkPanel","engineerUpdateSection","employeeCompletedCard","employeeHistoryCard"];
+    sectionsTask.forEach(id => { const el = $(id); if (el) el.classList.add('hidden'); });
+    const sv = $("siteVisitSection"); if (sv) sv.classList.remove('hidden');
+  };
+  if (btnTask) btnTask.onclick = showTask;
+  if (btnVisit) btnVisit.onclick = showVisit;
+  showTask();
+}
 
 /* Front Office: render reported tickets and send payment */
 function renderFrontOfficeReportedTickets() {
@@ -3816,7 +5162,7 @@ function renderFrontOfficeReportedTickets() {
       const ticket = tickets.find(t => t.id === ticketId);
       if (!ticket) return;
       // simulate sending to customer (email/phone)
-      alert(`Sending payment & feedback link to ${ticket.customerEmail}`);
+      if ($("payMsg")) $("payMsg").textContent = `Payment & feedback link prepared for ${ticket.customerEmail}`;
       openPaymentPage(ticket);
       logAction('frontoffice','send_payment_link', ticket.id);
     };
@@ -3827,36 +5173,56 @@ function renderFrontOfficeReportedTickets() {
 function showTicketProgress(ticketId) {
   const ticket = tickets.find(t => t.id === ticketId);
   if (!ticket) {
-    alert("Ticket not found");
+    const el = $("mgrActionErr") || $("foTicketErr") || $("progressUpdateErr");
+    if (el) el.textContent = "Ticket not found";
     return;
   }
   
   const emp = ticket.assignedEmployeeId ? employees.find(e => e.id === ticket.assignedEmployeeId) : null;
   const empName = emp ? emp.name : "Unassigned";
-  
-  let progressInfo = `
-TICKET PROGRESS
-===============
-Ticket ID: ${ticket.id}
-Customer: ${ticket.customerName}
-Phone: ${ticket.customerPhone}
-Email: ${ticket.customerEmail}
-Status: ${ticket.status}
-Assigned Employee: ${empName}
-Department: ${ticket.callType}
-Problem: ${ticket.problemTitle}
-Description: ${ticket.description}
-
-TASK PROGRESS:
-Task Status: ${ticket.taskStatus || "Not Started"}
-Progress: ${ticket.taskProgress}%
-Started Date: ${ticket.taskStartedDate || "Not Started"}
-Started Time: ${ticket.taskStartedTime || "-"}
-Task Needs: ${ticket.taskNeeds || "None specified"}
-Completion Image: ${ticket.taskCompletionImage ? "Available" : "Not provided"}
+  const existing = document.getElementById('ticketProgressModal');
+  let modal = existing;
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'ticketProgressModal';
+    modal.className = 'modal';
+    const inner = document.createElement('div');
+    inner.id = 'ticketProgressContent';
+    inner.style.padding = '20px';
+    inner.style.background = 'rgba(25,25,25,0.95)';
+    inner.style.borderRadius = '12px';
+    inner.style.maxWidth = '560px';
+    inner.style.margin = '60px auto';
+    inner.style.boxShadow = '0 10px 30px rgba(0,0,0,0.35)';
+    modal.appendChild(inner);
+    document.body.appendChild(modal);
+  }
+  const inner = document.getElementById('ticketProgressContent');
+  const progress = Math.max(0, Math.min(100, ticket.taskProgress || 0));
+  const status = ticket.taskStatus || 'Not Started';
+  inner.innerHTML = `
+    <h3 style="color:#e84c3d; margin:0 0 12px 0;">Ticket Progress</h3>
+    <div style="color:rgba(255,255,255,0.85); margin-bottom:10px;">${ticket.id} • ${ticket.customerName}</div>
+    <div style="display:grid; gap:10px;">
+      <div style="color:rgba(255,255,255,0.75)">Assigned: ${empName} • Status: ${ticket.status}</div>
+      <div style="background:rgba(255,255,255,0.08); border-radius:10px; padding:8px;">
+        <div style="height:16px; background:rgba(255,255,255,0.1); border-radius:8px; overflow:hidden;">
+          <div style="height:100%; width:${progress}%; background:linear-gradient(90deg,#5ea2d6,#e84c3d);"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:6px; color:rgba(255,255,255,0.8)">
+          <span>${status}</span>
+          <span>${progress}%</span>
+        </div>
+      </div>
+      <div style="color:rgba(255,255,255,0.8);">${ticket.problemTitle || '-'} • ${ticket.description || '-'}</div>
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px;">
+        <button class="btn small secondary" id="tpClose">Close</button>
+      </div>
+    </div>
   `;
-  
-  alert(progressInfo);
+  modal.classList.remove('hidden');
+  const closeBtn = document.getElementById('tpClose');
+  if (closeBtn) closeBtn.onclick = () => { modal.classList.add('hidden'); };
 }
 
 /* Manager: Task Progress Reports */
@@ -3898,7 +5264,8 @@ Date Started: ${ticket.taskStartedDate}
 Time Started: ${ticket.taskStartedTime}
 Task Needs: ${ticket.taskNeeds}
       `;
-      alert(message);
+      const el = $("mgrActionMsg");
+      if (el) el.textContent = message.replace(/\n/g, " • ");
     };
   });
 }
@@ -3910,7 +5277,7 @@ function renderAssignedTicketsForManager() {
   const myManagerId = currentUser.userId;
   const assigned = tickets.filter(t => 
     (t.acceptedByManager === myManagerId) && 
-    (t.status === "Assigned" || t.status === "In Progress" || t.status === "Completed" || t.status === "Reported" || t.status === "Finished")
+    (t.status === "Assigned" || t.status === "In Progress" || t.status === "Completed" || t.status === "Reported" || t.status === "Finished" || t.status === "Quotation Ready" || t.status === "Manager Site Visit")
   );
   
   assigned.forEach(t => {
@@ -3925,8 +5292,20 @@ function renderAssignedTicketsForManager() {
       <td>${t.acceptedDate || "-"}</td>
       <td>${t.status}</td>
       <td>
+        ${t.status === "Quotation Ready" ? '<button class="btn small primary" data-forward-quotation="' + t.id + '">Send Quotation to Sales</button>' : ''}
         ${t.status === "Reported" && !t.verifiedByManager ? '<button class="btn small primary" data-verify="' + t.id + '">Verify</button>' : ''}
         ${t.status !== "Finished" ? '<button class="btn small secondary" data-reassign="' + t.id + '">Reassign</button>' : ''}
+        ${t.status === "Manager Site Visit" ? '<button class="btn small primary" data-manager-sitevisit="' + t.id + '">Submit Site Visit Report</button>' : ''}
+        <div data-manager-sitevisit-box="${t.id}" class="hidden" style="margin-top:6px; display:flex; flex-direction:column; gap:6px;">
+          <select data-manager-sitevisit-status="${t.id}">
+            <option value="">Site Visited?</option>
+            <option value="Visited">Visited</option>
+            <option value="Not Visited">Not Visited</option>
+          </select>
+          <textarea data-manager-sitevisit-quotation="${t.id}" placeholder="Quotation Description"></textarea>
+          <input data-manager-sitevisit-photo="${t.id}" type="file" accept="image/*" />
+          <button class="btn small primary" data-manager-sitevisit-submit="${t.id}">Submit</button>
+        </div>
       </td>
     `;
     tbody.appendChild(tr);
@@ -3949,7 +5328,8 @@ function renderAssignedTicketsForManager() {
       if (!empId) return;
       const emp = employees.find(e => e.id === empId.trim());
       if (!emp) {
-        alert("Invalid employee ID");
+        const msg = $("mgrActionErr");
+        if (msg) msg.textContent = "Invalid employee ID";
         return;
       }
       ticket.assignedEmployeeId = emp.id;
@@ -3963,18 +5343,307 @@ function renderAssignedTicketsForManager() {
     };
   });
 
+  Array.from(tbody.querySelectorAll("button[data-forward-quotation]")).forEach(btn => {
+    btn.onclick = () => {
+      const ticketId = btn.getAttribute("data-forward-quotation");
+      const ticket = tickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+      const row = btn.closest('tr');
+      const cell = row && row.children && row.children[6];
+      if (cell) {
+        const selId = `forwardSalesMgr_${ticketId}`;
+        const salesMgrs = managers.filter(m => (m.assignedDepartments || []).some(d => (d || '').toLowerCase() === 'sales'));
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `<select id="${selId}"><option value="">Select Sales Manager</option>${salesMgrs.map(m => `<option value="${m.id}">${m.name}</option>`).join('')}</select> <button class="btn small primary" data-confirm-forward-sales="${ticketId}">Send</button>`;
+        cell.appendChild(wrap);
+        const confirmBtn = wrap.querySelector(`[data-confirm-forward-sales="${ticketId}"]`);
+        if (confirmBtn) {
+          confirmBtn.onclick = () => {
+            const sel = document.getElementById(selId);
+            const salesMgr = sel ? sel.value : '';
+            if (!salesMgr) return;
+            ticket.salesManagerId = salesMgr;
+            ticket.routeToSales = true;
+            ticket.assignedManagerIds = [salesMgr];
+            ticket.salesRequestedByManagerId = currentUser.userId;
+            ticket.status = "Pending Sales Approval";
+            logAction('manager','forward_quotation_to_sales', ticket.id, ticket.engineerRemarks || '');
+            renderAssignedTicketsForManager();
+            renderSalesApprovalsForManager();
+            renderAdminAllTickets();
+            updateStats();
+            const msg = $("mgrActionMsg");
+            if (msg) msg.textContent = "Quotation sent to Sales manager for approval.";
+          };
+        }
+      }
+    };
+  });
+
   Array.from(tbody.querySelectorAll("button[data-verify]")).forEach(btn => {
     btn.onclick = () => {
       const ticketId = btn.getAttribute("data-verify");
       const ticket = tickets.find(t => t.id === ticketId);
       if (!ticket) return;
       ticket.verifiedByManager = true;
+      ticket.financeReady = true;
       logAction('manager','verify_ticket', ticket.id);
       renderAssignedTicketsForManager();
-      renderFrontOfficeReportedTickets();
+      renderAdminAllTickets();
+      renderFinanceTickets();
+      updateStats();
+      if ($("mgrActionMsg")) $("mgrActionMsg").textContent = "Ticket verified and sent to Finance.";
+    };
+  });
+
+  Array.from(tbody.querySelectorAll("button[data-manager-sitevisit]")).forEach(btn => {
+    btn.onclick = () => {
+      const ticketId = btn.getAttribute("data-manager-sitevisit");
+      const box = tbody.querySelector(`div[data-manager-sitevisit-box="${ticketId}"]`);
+      if (box) box.classList.toggle("hidden");
+    };
+  });
+
+  Array.from(tbody.querySelectorAll("button[data-manager-sitevisit-submit]")).forEach(btn => {
+    btn.onclick = () => {
+      const ticketId = btn.getAttribute("data-manager-sitevisit-submit");
+      const t = tickets.find(x => x.id === ticketId);
+      if (!t) return;
+      const statusEl = tbody.querySelector(`select[data-manager-sitevisit-status="${ticketId}"]`);
+      const remarksEl = tbody.querySelector(`textarea[data-manager-sitevisit-quotation="${ticketId}"]`);
+      const photoEl = tbody.querySelector(`input[data-manager-sitevisit-photo="${ticketId}"]`);
+      const status = statusEl ? statusEl.value : '';
+      const quotation = remarksEl ? remarksEl.value.trim() : '';
+      const file = photoEl && photoEl.files ? photoEl.files[0] : null;
+      if (!status) { const e = $("mgrActionErr"); if (e) e.textContent = "Select site visited status."; return; }
+      if (!quotation) { const e = $("mgrActionErr"); if (e) e.textContent = "Enter quotation description."; return; }
+      if (!file) { const e = $("mgrActionErr"); if (e) e.textContent = "Attach a requirements photo."; return; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        t.siteVisited = status === 'Visited';
+        t.engineerRemarks = quotation;
+        t.siteVisitPhotoName = file.name;
+        t.siteVisitPhotoData = reader.result;
+        t.status = 'Quotation Ready';
+        t.reportedToManager = true;
+        t.awaitingManagerQuotationReview = true;
+        renderAssignedTicketsForManager();
+        const msg = $("mgrActionMsg");
+        if (msg) msg.textContent = "Site visit report submitted. Forward to Sales for approval.";
+      };
+      reader.readAsDataURL(file);
+    };
+  });
+}
+
+function renderSalesApprovalsForManager() {
+  const tbody = $("salesApprovalTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  if (!currentUser || currentUser.role !== 'manager') return;
+  const myManagerId = currentUser.userId;
+  const isSalesManager = !!(managers.find(m => m.id === myManagerId && (m.assignedDepartments || []).some(d => (d || '').toLowerCase() === 'sales')));
+  if (!isSalesManager) { tbody.innerHTML = ""; return; }
+  const list = tickets.filter(t => t.routeToSales && t.status === "Pending Sales Approval" && Array.isArray(t.assignedManagerIds) && t.assignedManagerIds.includes(myManagerId));
+  list.forEach(t => {
+    const tr = document.createElement('tr');
+    const desc = t.engineerRemarks || t.managerSiteVisitDescription || t.noSiteVisitDescription || '-';
+    const photo = t.siteVisitPhotoData || t.managerSiteVisitPhotoData || t.noSiteVisitPhotoData || '';
+    const photoHtml = photo ? `<img src="${photo}" alt="Photo" style="max-width:80px; border-radius:6px;"/>` : '-';
+    const employeeOptions = employees
+      .filter(e => e.managerId === myManagerId || !e.managerId)
+      .map(e => `<option value="${e.id}">${e.name}</option>`)
+      .join('');
+    const declineInfo = t.salesEmployeeDeclined ? (t.salesEmployeeDeclineRemark || '') : '';
+    const declinePhoto = t.salesEmployeeDeclined ? (t.salesEmployeeDeclinePhotoData || '') : '';
+    const declinePhotoHtml = declinePhoto ? `<img src="${declinePhoto}" alt="Decline Photo" style="max-width:80px; border-radius:6px;"/>` : '';
+    const actionHtml = t.salesEmployeeDeclined
+      ? `<div style="margin-bottom:6px; font-size:12px; color:rgba(255,255,255,0.8)">Declined by employee: ${declineInfo || '-'}</div>${declinePhotoHtml ? `<div>${declinePhotoHtml}</div>` : ''}<button class="btn small secondary" data-sales-reject="${t.id}">Cancel Ticket</button>`
+      : (!t.salesVerification
+        ? `<select id="salesVerifyEmp_${t.id}"><option value="">-- Select Employee --</option>${employeeOptions}</select> <button class="btn small primary" data-confirm-assign-sales-verifier="${t.id}">Assign Verifier</button>`
+        : (t.awaitingSalesEmployeeVerification ? `<span>Awaiting employee acceptance</span>` : `<span>Awaiting final verification</span>`));
+    tr.innerHTML = `
+      <td>${t.id}</td>
+      <td>${t.customerName}</td>
+      <td>${t.quotationTime || '-'}</td>
+      <td>${desc}</td>
+      <td>${photoHtml}</td>
+      <td>${actionHtml}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  Array.from(tbody.querySelectorAll('button[data-sales-approve]')).forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-sales-approve');
+      const t = tickets.find(x => x.id === id);
+      if (!t) return;
+      t.salesApproved = true;
+      t.routeToSales = false;
+      const mgrId = t.salesRequestedByManagerId || (t.assignedManagerIds && t.assignedManagerIds[0]);
+      t.assignedManagerIds = mgrId ? [mgrId] : [];
+      t.acceptedByManager = null;
+      t.assignedEmployeeId = null;
+      t.status = 'Pending Assignment';
+      logAction('sales','approve_return_manager', t.id, t.quotationTime || '');
+      renderSalesApprovalsForManager();
+      renderPendingTicketsForManager();
       renderAdminAllTickets();
       updateStats();
-      alert("Ticket verified by manager. Front Office can proceed with payment.");
+      const msg = $("mgrActionMsg");
+      if (msg) msg.textContent = "Sales approved. Ticket returned to manager for main task assignment.";
+    };
+  });
+
+  Array.from(tbody.querySelectorAll('button[data-sales-reject]')).forEach(btn => {
+    btn.onclick = () => {
+      btn.disabled = true;
+      const id = btn.getAttribute('data-sales-reject');
+      const t = tickets.find(x => x.id === id);
+      if (!t) return;
+      const remarkInputId = `salesRejectRemark_${id}`;
+      let remarkInput = document.getElementById(remarkInputId);
+      if (!remarkInput) {
+        const row = btn.closest('tr');
+        const cell = row && row.children && row.children[3];
+        if (cell) {
+          const wrap = document.createElement('div');
+          wrap.innerHTML = `<input id="${remarkInputId}" type="text" placeholder="Enter reason for cancellation" style="margin-top:6px;" /> <button class="btn small secondary" data-confirm-sales-reject="${id}">Confirm Cancel</button>`;
+          cell.appendChild(wrap);
+          const inputEl = wrap.querySelector(`#${remarkInputId}`);
+          if (inputEl) { inputEl.value = t.salesEmployeeDeclineRemark || ''; }
+        }
+      }
+    };
+  });
+
+  Array.from(tbody.querySelectorAll('button[data-confirm-assign-sales-verifier]')).forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-confirm-assign-sales-verifier');
+      const t = tickets.find(x => x.id === id);
+      if (!t) return;
+      const sel = document.getElementById(`salesVerifyEmp_${id}`);
+      const empId = sel ? sel.value : '';
+      if (!empId) return;
+      t.assignedEmployeeId = empId;
+      t.assignedManagerIds = [currentUser.userId];
+      t.acceptedByManager = null;
+      t.salesVerification = true;
+      t.awaitingSalesEmployeeVerification = true;
+      t.status = 'Assigned';
+      logAction('sales','assign_verifier', t.id, empId);
+      renderSalesApprovalsForManager();
+      renderEmployeeTicketsIfEmployeeLoggedIn();
+      renderAdminAllTickets();
+      updateStats();
+      const msg = $("mgrActionMsg");
+      if (msg) msg.textContent = "Sales verifier assigned. Employee will verify and report.";
+    };
+  });
+
+  Array.from(tbody.querySelectorAll('button[data-confirm-sales-reject]')).forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-confirm-sales-reject');
+      const t = tickets.find(x => x.id === id);
+      if (!t) return;
+      const remarkEl = document.getElementById(`salesRejectRemark_${id}`);
+      const remark = remarkEl ? remarkEl.value.trim() : '';
+      if (!remark) { return; }
+      t.salesApproved = false;
+      t.salesApprovalRemark = remark;
+      t.routeToSales = false;
+      t.status = "Closed";
+      t.closedReason = remark;
+      t.closedBy = currentUser.userId;
+      logAction('sales','reject_close', t.id, t.salesApprovalRemark);
+      renderSalesApprovalsForManager();
+      renderAdminAllTickets();
+      updateStats();
+      if ($("mgrActionMsg")) $("mgrActionMsg").textContent = "Sales cancelled the ticket with reason. Ticket closed.";
+    };
+  });
+}
+
+function renderSalesVerificationForManager() {
+  const tbody = $("salesVerificationTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  if (!currentUser || currentUser.role !== 'manager') return;
+  const myManagerId = currentUser.userId;
+  const isSalesManager = !!(managers.find(m => m.id === myManagerId && (m.assignedDepartments || []).some(d => (d || '').toLowerCase() === 'sales')));
+  if (!isSalesManager) { tbody.innerHTML = ''; return; }
+  const list = tickets.filter(t => t.awaitingSalesManagerVerification && Array.isArray(t.assignedManagerIds) && t.assignedManagerIds.includes(myManagerId));
+  list.forEach(t => {
+    const emp = t.assignedEmployeeId ? employees.find(e => e.id === t.assignedEmployeeId) : null;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${t.id}</td>
+      <td>${t.customerName}</td>
+      <td>${emp ? emp.name : '-'}</td>
+      <td>
+        <button class="btn small primary" data-sales-verify-final="${t.id}">Verify</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  Array.from(tbody.querySelectorAll('button[data-sales-verify-final]')).forEach(btn => {
+    btn.onclick = () => {
+      btn.disabled = true;
+      const id = btn.getAttribute('data-sales-verify-final');
+      const t = tickets.find(x => x.id === id);
+      if (!t) return;
+      t.salesVerified = true;
+      t.awaitingSalesManagerVerification = false;
+      const mgrId = t.salesRequestedByManagerId || (t.originalManagerId || null);
+      t.assignedManagerIds = mgrId ? [mgrId] : [];
+      t.acceptedByManager = null;
+      t.salesVerification = false;
+      t.awaitingSalesEmployeeVerification = false;
+      t.assignedEmployeeId = null;
+      t.status = 'Pending Assignment';
+      logAction('sales','verify_return_manager', t.id);
+      renderSalesVerificationForManager();
+      renderPendingTicketsForManager();
+      renderAdminAllTickets();
+      updateStats();
+      const msg = $("mgrActionMsg");
+      if (msg) msg.textContent = "Sales verified. Ticket returned to original manager for final assignment.";
+    };
+  });
+}
+
+function renderHandoverApprovalsForManager() {
+  const tbody = $("handoverApprovalsTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const myManagerId = currentUser.userId;
+  const list = tickets.filter(t => t.acceptedByManager === myManagerId && t.awaitingHandover);
+  list.forEach(t => {
+    const emp = employees.find(e => e.id === t.assignedEmployeeId);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${t.id}</td>
+      <td>${emp ? emp.name : '-'}</td>
+      <td>${t.materialsUsed || t.engineerRemarks || '-'}</td>
+      <td><button class="btn small primary" data-approve-handover="${t.id}">Approve</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  Array.from(tbody.querySelectorAll('button[data-approve-handover]')).forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-approve-handover');
+      const t = tickets.find(x => x.id === id);
+      if (!t) return;
+      t.awaitingHandover = false;
+      t.handoverApproved = true;
+      t.verifiedByManager = true;
+      t.financeReady = true;
+      logAction('manager','handover_approved', t.id);
+      renderHandoverApprovalsForManager();
+      renderFinanceTickets();
+      renderAdminAllTickets();
+      updateStats();
     };
   });
 }
@@ -3982,14 +5651,15 @@ function renderFinanceTickets() {
   const tbody = $("financeTicketsTableBody");
   if (!tbody) return;
   tbody.innerHTML = "";
-  const list = tickets.filter(t => t.status === "Reported" && t.verifiedByManager);
+  const list = tickets.filter(t => t.financeReady || (t.status === "Reported" && t.verifiedByManager) || t.financeAdvanceRequired);
   list.forEach(t => {
-    const amount = servicePricing[t.serviceType] || 0;
+    const svcName = t.serviceType || t.callType || 'Sales';
+    const amount = servicePricing[svcName] || 0;
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${t.id}</td>
       <td>${t.customerName}</td>
-      <td>${t.serviceType}</td>
+      <td>${svcName}</td>
       <td>${amount}</td>
       <td>${t.paymentStatus || 'pending'}</td>
       <td>
@@ -4007,6 +5677,187 @@ function renderFinanceTickets() {
       openPaymentPage(ticket);
     };
   });
+}
+/* Help Desk */
+let hdSelectedTicket = null;
+function renderHelpDeskTickets() {
+  const tbody = $("helpDeskTicketsTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const list = tickets.filter(t => (!t.department || t.department === "") && (t.status === "Pending Assignment" || t.status === "Raised"));
+  list.forEach(t => {
+    const raisedBy = t.frontOfficeUser ? "Front Office" : (t.raisedByManager ? "Manager" : "-");
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${t.id}</td>
+      <td>${raisedBy}</td>
+      <td>${t.customerName}</td>
+      <td>${t.callType || '-'}</td>
+      <td>${t.status}</td>
+      <td><button class="btn small primary" data-hd-process="${t.id}">Process</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  Array.from(tbody.querySelectorAll('button[data-hd-process]')).forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-hd-process');
+      const ticket = tickets.find(t => t.id === id);
+      if (!ticket) return;
+      hdSelectedTicket = ticket;
+      $("helpDeskProcessCard").classList.remove("hidden");
+      $("hdTicketId").value = ticket.id;
+      $("hdCustomer").value = ticket.customerName;
+      $("hdCallType").value = ticket.callType || '';
+      $("hdDepartment").value = ticket.department || '';
+      $("hdProduct").value = ticket.equipment?.product || '';
+      $("hdConfig").value = ticket.equipment?.configuration || '';
+      $("hdModel").value = ticket.equipment?.model || '';
+      $("hdYear").value = ticket.equipment?.year || '';
+      $("hdSerial").value = ticket.equipment?.serial || '';
+      $("hdAdditional").value = ticket.equipment?.additional || '';
+      $("hdRemarks").value = ticket.equipment?.remarks || '';
+      const src = $("hdSourceType");
+      const refBox = $("hdReferredByBox");
+      const refTxt = $("hdReferredByText");
+      if (ticket.referredByManagerId && ticket.referredByName) {
+        if (refBox) refBox.style.display = 'block';
+        if (refTxt) refTxt.value = `${ticket.referredByName} (Manager)`;
+        if (src) { src.disabled = true; src.value = 'Manager'; }
+      } else {
+        if (refBox) refBox.style.display = 'none';
+        if (src) { src.disabled = false; src.value = ticket.referralType || ticket.sourceType || ''; }
+      }
+      $("hdMsg").textContent = '';
+      $("hdErr").textContent = '';
+    };
+  });
+}
+
+function setupHelpDeskHandlers() {
+  const sendBtn = $("hdSendToDeptBtn");
+  const cancelBtn = $("hdCancelBtn");
+  const hdCustSel = $("hdSelectExistingCust");
+  const hdAddCustBtn = $("hdAddCustomerBtn");
+  const hdCreateBtn = $("hdCreateTicketBtn");
+  const populateHdCustomers = () => {
+    if (!hdCustSel) return;
+    const opts = customers.map(c => `<option value="${c.id}">${c.type === 'corporate' ? (c.companyName || c.name) : c.name} (${c.phone || '-'})</option>`).join('');
+    hdCustSel.innerHTML = `<option value="">-- Select Customer --</option>` + opts;
+  };
+  populateHdCustomers();
+  if (hdAddCustBtn) {
+    hdAddCustBtn.onclick = () => {
+      $("hdCreateErr").textContent = '';
+      $("hdCreateMsg").textContent = '';
+      const name = $("hdNewCustName").value.trim();
+      const email = $("hdNewCustEmail").value.trim();
+      const phone = $("hdNewCustPhone").value.trim();
+      if (!name || !email || !phone) { $("hdCreateErr").textContent = 'Enter name, email, and phone.'; return; }
+      if (!email.includes('@')) { $("hdCreateErr").textContent = 'Enter a valid email.'; return; }
+      const id = generateCustomerId();
+      customers.push({ id, type: 'individual', name, phone, email, address: '', gst: '', contactPerson: '', companyId: '' });
+      populateHdCustomers();
+      if (hdCustSel) hdCustSel.value = id;
+      $("hdCreateMsg").textContent = 'Customer created and selected.';
+      $("hdNewCustName").value = '';
+      $("hdNewCustEmail").value = '';
+      $("hdNewCustPhone").value = '';
+    };
+  }
+  if (hdCreateBtn) {
+    hdCreateBtn.onclick = () => {
+      $("hdCreateErr").textContent = '';
+      $("hdCreateMsg").textContent = '';
+      const custId = hdCustSel ? hdCustSel.value : '';
+      const callType = $("hdNewCallType").value;
+      const title = $("hdNewTitle").value.trim();
+      const desc = $("hdNewDesc").value.trim();
+      if (!custId || !callType || !title || !desc) { $("hdCreateErr").textContent = 'Fill all fields above.'; return; }
+      const cust = customers.find(c => c.id === custId);
+      const id = generateTicketId();
+      tickets.push({
+        id,
+        customerId: cust ? cust.id : null,
+        customerName: cust ? (cust.type === 'corporate' ? (cust.companyName || cust.name) : cust.name) : '',
+        customerEmail: cust ? cust.email : '',
+        customerPhone: cust ? cust.phone : '',
+        callType,
+        problemTitle: title,
+        description: desc,
+        callGroup: null,
+        assignedManagerIds: [],
+        acceptedByManager: null,
+        assignedEmployeeId: null,
+        taskStatus: null,
+        taskProgress: 0,
+        completedDate: null,
+        raisedDate: new Date().toISOString().split('T')[0],
+        status: 'Raised',
+        paymentStatus: 'pending',
+        paymentHistory: [],
+        sourceType: 'HelpDesk'
+      });
+      logAction('helpdesk','create_ticket', id, callType);
+      $("hdCreateMsg").textContent = `Ticket ${id} created.`;
+      $("hdNewCallType").value = '';
+      $("hdNewTitle").value = '';
+      $("hdNewDesc").value = '';
+      renderHelpDeskTickets();
+      renderAdminAllTickets();
+      updateStats();
+    };
+  }
+  if (sendBtn) {
+    sendBtn.onclick = () => {
+      $("hdErr").textContent = '';
+      $("hdMsg").textContent = '';
+      if (!hdSelectedTicket) { $("hdErr").textContent = 'No ticket selected.'; return; }
+      const dept = $("hdDepartment").value;
+      if (!dept) { $("hdErr").textContent = 'Select department.'; return; }
+      const equipment = {
+        product: $("hdProduct").value.trim(),
+        configuration: $("hdConfig").value.trim(),
+        model: $("hdModel").value.trim(),
+        year: $("hdYear").value.trim(),
+        serial: $("hdSerial").value.trim(),
+        additional: $("hdAdditional").value.trim(),
+        remarks: $("hdRemarks").value.trim()
+      };
+      const sourceType = $("hdSourceType").value;
+      hdSelectedTicket.department = dept;
+      hdSelectedTicket.equipment = equipment;
+      if (!hdSelectedTicket.referredByManagerId) {
+        hdSelectedTicket.sourceType = sourceType;
+        hdSelectedTicket.referralType = sourceType;
+      } else {
+        hdSelectedTicket.referralType = 'Manager';
+      }
+      const assignedMgrIds = managers.filter(m => (m.assignedDepartments || []).some(d => (d || '').toLowerCase() === (dept || '').toLowerCase())).map(m => m.id);
+      if (!assignedMgrIds || assignedMgrIds.length === 0) {
+        $("hdErr").textContent = 'No managers found for the selected department. Please assign departments to managers in Admin/HR.';
+        return;
+      }
+      hdSelectedTicket.assignedManagerIds = assignedMgrIds;
+      hdSelectedTicket.status = "Pending Assignment";
+      logAction('helpdesk','process_and_route', hdSelectedTicket.id, dept);
+      $("hdMsg").textContent = 'Ticket sent to department managers.';
+      setTimeout(() => {
+        $("helpDeskProcessCard").classList.add("hidden");
+        hdSelectedTicket = null;
+        renderHelpDeskTickets();
+        renderPendingTicketsForManager();
+        renderAdminAllTickets();
+        updateStats();
+      }, 1200);
+    };
+  }
+  if (cancelBtn) {
+    cancelBtn.onclick = () => {
+      $("helpDeskProcessCard").classList.add("hidden");
+      hdSelectedTicket = null;
+    };
+  }
 }
 function renderAdminOtherEmployees() {
   const tbody = $("otherEmployeesTableBody");
@@ -4155,3 +6006,10 @@ function setupOtherEmployeeForm() {
     };
   }
 }
+  Array.from(tbody.querySelectorAll("button[data-show-assign]")).forEach(btn => {
+    btn.onclick = () => {
+      const ticketId = btn.getAttribute("data-show-assign");
+      const box = tbody.querySelector(`div[data-assign-box="${ticketId}"]`);
+      if (box) box.classList.toggle("hidden");
+    };
+  });
